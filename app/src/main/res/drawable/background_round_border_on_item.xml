@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- selected. This style will be applied when the view is selected -->
+    <item android:state_selected="true">
+        <shape android:shape="rectangle">
+            <solid android:color="#FFFF"/>
+            <stroke android:color="#FFFF"
+                android:width="4dp" />
+            <!--corners allow us to make the rounded corners button-->
+            <corners
+                android:topLeftRadius="20dp"
+                android:bottomLeftRadius="20dp"/>
+        </shape>
+    </item>
+
+    <!-- default -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#FFFF"/>
+            <stroke android:color="#FFFF"
+                android:width="4dp" />
+            <!--corners allow us to make the rounded corners button-->
+            <corners
+                android:radius="20dp" />
+        </shape>
+    </item>
+
+</selector>

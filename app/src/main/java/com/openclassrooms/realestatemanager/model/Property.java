@@ -1,11 +1,20 @@
 package com.openclassrooms.realestatemanager.model;
 
 import androidx.annotation.NonNull;
+import androidx.room.Entity;
+/*
+ * Copyright (c) 2021. This code has been written by Damien De Lombaert
+ */
+import androidx.room.ForeignKey;
+import androidx.room.PrimaryKey;
 
 import java.util.Date;
 
+@Entity (foreignKeys = {
+        @ForeignKey(entity = User.class, parentColumns = "id", childColumns = "idAgent")})
 public class Property {
 
+    @PrimaryKey(autoGenerate = true) private long id;
     @NonNull private String type;
     @NonNull private float pris;
     @NonNull private int nbRoom;
@@ -13,10 +22,11 @@ public class Property {
     @NonNull private String state;
     @NonNull private Date dateEnter;
     private Date dateSold;
+    private long idAgent;
 
     public Property() {
     }
-    public Property(@NonNull String type, float pris, int nbRoom, @NonNull String description, @NonNull String state, @NonNull Date dateEnter, Date dateSold) {
+    public Property(@NonNull String type, float pris, int nbRoom, @NonNull String description, @NonNull String state, @NonNull Date dateEnter, Date dateSold, long idAgent) {
         this.type = type;
         this.pris = pris;
         this.nbRoom = nbRoom;
@@ -24,6 +34,7 @@ public class Property {
         this.state = state;
         this.dateEnter = dateEnter;
         this.dateSold = dateSold;
+        this.idAgent = idAgent;
     }
 
     //GETTER
@@ -52,6 +63,12 @@ public class Property {
     public Date getDateSold() {
         return dateSold;
     }
+    public long getId() {
+        return id;
+    }
+    public long getIdAgent() {
+        return idAgent;
+    }
 
     //SETTER
     public void setType(@NonNull String type) {
@@ -74,5 +91,11 @@ public class Property {
     }
     public void setDateSold(Date dateSold) {
         this.dateSold = dateSold;
+    }
+    public void setId(long id) {
+        this.id = id;
+    }
+    public void setIdAgent(long idAgent) {
+        this.idAgent = idAgent;
     }
 }

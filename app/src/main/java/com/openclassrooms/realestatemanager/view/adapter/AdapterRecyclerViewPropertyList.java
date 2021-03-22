@@ -22,6 +22,8 @@ public class AdapterRecyclerViewPropertyList extends RecyclerView.Adapter<Adapte
     private List<Property> propertyList = new ArrayList<>();
     private Context context;
 
+    private int currentSelection = 0;
+
     @Override
     public ViewHolderProperty onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         context = parent.getContext();
@@ -31,7 +33,9 @@ public class AdapterRecyclerViewPropertyList extends RecyclerView.Adapter<Adapte
     }
     @Override
     public void onBindViewHolder(@NonNull ViewHolderProperty holder, int position) {
-        holder.bind(context);
+        holder.bind(context, this);
+        holder.adaptTheTracking(currentSelection == position);
+
     }
     @Override
     public int getItemCount() {
@@ -47,20 +51,29 @@ public class AdapterRecyclerViewPropertyList extends RecyclerView.Adapter<Adapte
 
         private LinearLayout item;
 
+
         public ViewHolderProperty(@NonNull View itemView) {
             super(itemView);
             this.item = itemView.findViewById(R.id.item_property);
         }
 
-        public void bind(final Context context){
+        public void bind(final Context context, final AdapterRecyclerViewPropertyList adapter){
             // TODO Modify this way
-            item.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    MainActivity activity = (MainActivity) context;
-                    activity.switchFragment(1);
-                }
+            item.setOnClickListener(view -> {
+                MainActivity activity = (MainActivity) context;
+
+                activity.switchFragment(1);
+                // TODO verify if is fine
+                adapter.currentSelection = getAdapterPosition();
+                adapter.notifyDataSetChanged();
             });
+        }
+        public void adaptTheTracking (boolean isSelected){
+            if(isSelected){
+                item.setSelected(true);
+            }else{
+                item.setSelected(false);
+            }
         }
     }
 

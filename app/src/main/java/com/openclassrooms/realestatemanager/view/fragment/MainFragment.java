@@ -45,7 +45,7 @@ public class MainFragment extends Fragment {
         /** PREPOPULATE
          * TODO Delete this */
         List<Property> properties = new ArrayList<>();
-        Property property = new Property("House", 1000000f, 10, "Amazing house", "Sold", new Date(), new Date());
+        Property property = new Property("House", 1000000f, 10, "Amazing house", "Sold", new Date(), new Date(), 0);
         properties.add(property);
         properties.add(property);
         properties.add(property);

@@ -43,4 +43,12 @@ public class Utils {
         WifiManager wifi = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
         return wifi.isWifiEnabled();
     }
+
+    public static long getRandomLong (){
+        long leftLimit = 1L;
+        long rightLimit = 10L;
+        return leftLimit + (long) (Math.random() * (rightLimit - leftLimit));
+    }
+
+
 }
