@@ -4,6 +4,7 @@
 
 package com.openclassrooms.realestatemanager.model;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Embedded;
 import androidx.room.Junction;
 import androidx.room.Relation;
@@ -12,16 +13,16 @@ import java.util.List;
 
 public class PropertyAttribute {
 
-    public Property property;
-    public List<PointOfInterest> pointsOfInterest;
-    public List<Photo> photos;
-    public Address address;
-    public User agent;
+    public LiveData<Property> property;
+    public LiveData<List<PointOfInterest>> pointsOfInterest;
+    public LiveData<List<Photo>> photos;
+    public LiveData<Address> address;
+    public LiveData<User> agent;
 
     public PropertyAttribute() {
     }
 
-    public PropertyAttribute(Property property, List<PointOfInterest> pointsOfInterest, List<Photo> photos, Address address, User agent) {
+    public PropertyAttribute(LiveData<Property> property, LiveData<List<PointOfInterest>> pointsOfInterest, LiveData<List<Photo>> photos, LiveData<Address> address, LiveData<User> agent) {
         this.property = property;
         this.pointsOfInterest = pointsOfInterest;
         this.photos = photos;
@@ -30,37 +31,38 @@ public class PropertyAttribute {
     }
 
     // GETTER
-    public Property getProperty() {
+    public LiveData<Property> getProperty() {
         return property;
     }
-    public List<PointOfInterest> getPointsOfInterest() {
+    public LiveData<List<PointOfInterest>> getPointsOfInterest() {
         return pointsOfInterest;
     }
-    public List<Photo> getPhotos() {
+    public LiveData<List<Photo>> getPhotos() {
         return photos;
     }
-    public Address getAddress() {
+    public LiveData<Address> getAddress() {
         return address;
     }
-    public User getAgent() {
+    public LiveData<User> getAgent() {
         return agent;
     }
 
     //SETTER
-    public void setProperty(Property property) {
+    public void setProperty(LiveData<Property> property) {
         this.property = property;
     }
-    public void setPointsOfInterest(List<PointOfInterest> pointsOfInterest) {
+    public void setPointsOfInterest(LiveData<List<PointOfInterest>> pointsOfInterest) {
         this.pointsOfInterest = pointsOfInterest;
     }
-    public void setPhotos(List<Photo> photos) {
+    public void setPhotos(LiveData<List<Photo>> photos) {
         this.photos = photos;
     }
-    public void setAddress(Address address) {
+    public void setAddress(LiveData<Address> address) {
         this.address = address;
     }
-    public void setAgent(User agent) {
+    public void setAgent(LiveData<User> agent) {
         this.agent = agent;
     }
+
 }
 

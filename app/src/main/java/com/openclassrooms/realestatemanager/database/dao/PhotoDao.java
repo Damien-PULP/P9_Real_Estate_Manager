@@ -29,4 +29,7 @@ public interface PhotoDao {
 
     @Query("DELETE FROM Photo WHERE id = :id")
     int deletePhoto(long id);
+
+    @Query("DELETE FROM Photo WHERE idProperty = :idProperty")
+    int deletePhotosOfAProperty(long idProperty);
 }

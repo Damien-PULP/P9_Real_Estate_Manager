@@ -26,6 +26,9 @@ public interface UserDao {
     @Query("SELECT * FROM User WHERE firstName = :firstName AND secondName = :secondName AND password = :password")
     LiveData<User> getUser(String firstName, String secondName, String password);
 
+    @Query("SELECT * FROM User")
+    LiveData<User> getUserSimplify();
+
     @Update
     int updateUser(User user);
 

@@ -16,6 +16,7 @@ import com.openclassrooms.realestatemanager.model.Photo;
 import com.openclassrooms.realestatemanager.model.PointOfInterest;
 import com.openclassrooms.realestatemanager.model.Property;
 import com.openclassrooms.realestatemanager.model.PropertyAttribute;
+import com.openclassrooms.realestatemanager.model.PropertyObj;
 import com.openclassrooms.realestatemanager.model.User;
 
 import org.junit.After;
@@ -27,6 +28,7 @@ import org.junit.runner.RunWith;
 import java.util.Date;
 import java.util.List;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
@@ -163,13 +165,10 @@ public class PropertyDaoTest {
         this.database.photoDao().insertPhoto(photo1OfProperty);
         this.database.photoDao().insertPhoto(photo2OfProperty);
 
-        Address addressDb = LiveDataTestUtil.getValue(database.addressDao().getAddress(propertiesDb.get(0).getId()));
-        List<Photo> photos = LiveDataTestUtil.getValue(database.photoDao().getPhotos(propertiesDb.get(0).getId()));
-        List<PointOfInterest> pointInDB = LiveDataTestUtil.getValue(database.pointOfInterestDao().getPointsOfInterest(propertiesDb.get(0).getId()));
+        List<PropertyObj> propertyObjs = LiveDataTestUtil.getValue(database.propertyDao().getPropertyWithAllAttribute(user.getId()));
 
-        PropertyAttribute propertyAll = new PropertyAttribute(propertiesDb.get(0), pointInDB, photos, addressDb, user);
+        assertNotNull(propertyObjs);
 
-        assertTrue(propertyAll.getProperty() != null && propertyAll.getAddress() != null && propertyAll.getAgent() != null && propertyAll.getPhotos() != null && propertyAll.getPointsOfInterest() != null);
     }
 
 }

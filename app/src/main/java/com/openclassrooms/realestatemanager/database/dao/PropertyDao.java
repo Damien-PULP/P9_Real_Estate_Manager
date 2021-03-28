@@ -11,11 +11,15 @@ import androidx.room.Query;
 import androidx.room.Update;
 
 import com.openclassrooms.realestatemanager.model.Property;
+import com.openclassrooms.realestatemanager.model.PropertyObj;
 
 import java.util.List;
 
 @Dao
 public interface PropertyDao {
+
+    @Query("SELECT * FROM Property WHERE idAgent = :userId")
+    LiveData<List<PropertyObj>> getPropertyWithAllAttribute (long userId);
 
     @Query("SELECT * FROM Property WHERE idAgent = :userId")
     LiveData<List<Property>> getProperty(long userId);

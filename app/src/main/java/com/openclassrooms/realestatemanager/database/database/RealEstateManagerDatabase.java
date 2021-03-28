@@ -60,14 +60,14 @@ public abstract class RealEstateManagerDatabase extends RoomDatabase {
             public void onCreate(@NonNull SupportSQLiteDatabase db) {
                 super.onCreate(db);
 
-                ContentValues contentValues = new ContentValues();
+               /* ContentValues contentValues = new ContentValues();
                 contentValues.put("id", "1");
                 contentValues.put("firstName", "firstName");
                 contentValues.put("email", "email");
                 contentValues.put("phoneNumber", "000000000");
                 contentValues.put("password", "password");
 
-                db.insert("User", OnConflictStrategy.IGNORE, contentValues);
+                db.insert("User", OnConflictStrategy.IGNORE, contentValues);*/
             }
         };
     }

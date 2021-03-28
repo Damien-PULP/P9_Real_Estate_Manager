@@ -15,7 +15,7 @@ import java.util.Objects;
 public class User {
 
     @PrimaryKey
-    private long id;
+    @NonNull private long id;
     @NonNull private String firstName;
     @NonNull private String secondName;
     @NonNull private String email;

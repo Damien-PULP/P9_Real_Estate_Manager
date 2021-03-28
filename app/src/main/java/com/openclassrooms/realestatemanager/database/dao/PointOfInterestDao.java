@@ -30,4 +30,7 @@ public interface PointOfInterestDao {
 
     @Query("DELETE FROM PointOfInterest WHERE id = :id")
     int deletePointOfInterest(long id);
+
+    @Query("DELETE FROM PointOfInterest WHERE idProperty = :idProperty")
+    int deletePointsOfInterestOfProperty(long idProperty);
 }
