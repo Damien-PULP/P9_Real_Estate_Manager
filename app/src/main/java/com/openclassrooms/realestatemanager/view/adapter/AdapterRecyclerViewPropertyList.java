@@ -1,9 +1,11 @@
 package com.openclassrooms.realestatemanager.view.adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -53,12 +55,14 @@ public class AdapterRecyclerViewPropertyList extends RecyclerView.Adapter<Adapte
     static class ViewHolderProperty extends RecyclerView.ViewHolder {
 
         private LinearLayout item;
+        private ImageView icon;
         private TextView type;
         private TextView location;
         private TextView pris;
 
         public ViewHolderProperty(@NonNull View itemView) {
             super(itemView);
+            this.icon = itemView.findViewById(R.id.item_property_image);
             this.item = itemView.findViewById(R.id.item_property);
             this.type = itemView.findViewById(R.id.item_property_type);
             this.location = itemView.findViewById(R.id.item_property_location);
@@ -77,7 +81,13 @@ public class AdapterRecyclerViewPropertyList extends RecyclerView.Adapter<Adapte
                 adapter.notifyDataSetChanged();
             });
 
+            if(propertyObj.getPhotos().size() > 0){
+                Bitmap bitmap = propertyObj.getPhotos().get(0).getBitmapPhoto();
+                icon.setImageBitmap(bitmap);
+            }
+
             type.setText(propertyObj.getProperty().getType());
+
             pris.setText("$" + (propertyObj.getProperty().getPris()));
         }
         public void adaptTheTracking (boolean isSelected){

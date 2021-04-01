@@ -21,6 +21,9 @@ public interface PhotoDao {
     @Query("SELECT * FROM Photo WHERE idProperty = :idProperty")
     LiveData<List<Photo>> getPhotos(long idProperty);
 
+    @Query("SELECT * FROM Photo WHERE id = :id")
+    LiveData<Photo> getAPhoto(long id);
+
     @Insert
     long insertPhoto (Photo photo);
 

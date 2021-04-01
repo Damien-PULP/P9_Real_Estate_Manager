@@ -52,7 +52,7 @@ public class Photo {
         this.id = id;
     }
     public void setBitmapPhoto(@NonNull Bitmap btmIcon) {
-        this.bitmapPhoto = bitmapPhoto;
+        this.bitmapPhoto = btmIcon;
     }
     public void setDescription(String description) {
         this.description = description;

@@ -12,11 +12,14 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.model.PropertyObj;
 import com.openclassrooms.realestatemanager.view.activity.MainActivity;
+import com.openclassrooms.realestatemanager.view.adapter.AdapterRecyclerViewPhotosList;
 import com.openclassrooms.realestatemanager.view.viewmodel.Injection;
 import com.openclassrooms.realestatemanager.view.viewmodel.MainViewModel;
 import com.openclassrooms.realestatemanager.view.viewmodel.ViewModelFactory;
@@ -32,6 +35,9 @@ public class DetailFragment extends Fragment {
     private TextView txtAreaProperty;
     private TextView txtNbRoomProperty;
     private TextView txtPrisProperty;
+    private RecyclerView recyclerViewPhotosProperty;
+
+    private AdapterRecyclerViewPhotosList adapter;
 
     private MainViewModel mainViewModel;
     private LiveData<PropertyObj> currentProperty;
@@ -61,17 +67,21 @@ public class DetailFragment extends Fragment {
         txtPrisProperty.setText("$" + propertyObj.getProperty().getPris());
         txtAreaProperty.setText(propertyObj.getProperty().getArea() + " m2");
         txtNbRoomProperty.setText(propertyObj.getProperty().getNbRoom() + " rooms");
+        adapter.updateData(propertyObj.getPhotos());
     }
 
 
     private void configureUI(View root) {
         if(root.findViewById(R.id.fragment_detail_app_bar) != null) {
             Toolbar toolbar = (Toolbar) root.findViewById(R.id.fragment_detail_toolbar);
+            //toolbar.setTitle("");
+           // toolbar.inflateMenu(R.menu.menu_detail_edit);
             MainActivity activity = (MainActivity) getActivity();
             assert activity != null;
             activity.setSupportActionBar(toolbar);
-            CollapsingToolbarLayout toolBarLayout = (CollapsingToolbarLayout) root.findViewById(R.id.fragment_detail_toolbar_layout);
-            toolBarLayout.setTitle("");
+            //activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            //CollapsingToolbarLayout toolBarLayout = (CollapsingToolbarLayout) root.findViewById(R.id.fragment_detail_toolbar_layout);
+            //toolBarLayout.setTitle("");
         }
         txtTypeProperty = root.findViewById(R.id.fragment_detail_type);
         txtDescriptionProperty = root.findViewById(R.id.fragment_detail_description);
@@ -79,6 +89,10 @@ public class DetailFragment extends Fragment {
         txtAreaProperty = root.findViewById(R.id.fragment_detail_area);
         txtPrisProperty = root.findViewById(R.id.fragment_detail_pris);
         txtNbRoomProperty = root.findViewById(R.id.fragment_detail_nb_room);
+        recyclerViewPhotosProperty = root.findViewById(R.id.fragment_detail_photos_recycler_view);
+        recyclerViewPhotosProperty.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+        adapter = new AdapterRecyclerViewPhotosList(false);
+        recyclerViewPhotosProperty.setAdapter(adapter);
     }
 
     private void configureViewModel() {

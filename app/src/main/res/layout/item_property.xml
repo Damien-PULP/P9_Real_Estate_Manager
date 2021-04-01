@@ -13,6 +13,7 @@
         android:id="@+id/item_property_image"
         android:layout_width="match_parent"
         android:layout_height="200dp"
+        android:scaleType="centerCrop"
         android:background="@drawable/background_round_border_on_top"
         android:backgroundTint="@color/colorPrimaryDark"/>
 

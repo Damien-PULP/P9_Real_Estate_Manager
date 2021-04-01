@@ -23,10 +23,10 @@ import com.openclassrooms.realestatemanager.model.Photo;
 import com.openclassrooms.realestatemanager.model.PointOfInterest;
 import com.openclassrooms.realestatemanager.model.Property;
 import com.openclassrooms.realestatemanager.model.User;
-import com.openclassrooms.realestatemanager.utils.ConverterRoom;
+import com.openclassrooms.realestatemanager.utils.Converters;
 
 @Database(entities = {User.class, Property.class, Address.class, Photo.class, PointOfInterest.class}, version = 5, exportSchema = false)
-@TypeConverters({ConverterRoom.class})
+@TypeConverters({Converters.class})
 public abstract class RealEstateManagerDatabase extends RoomDatabase {
 
     // SINGLETON

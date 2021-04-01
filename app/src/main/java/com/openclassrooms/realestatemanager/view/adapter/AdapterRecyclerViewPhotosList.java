@@ -26,18 +26,39 @@ public class AdapterRecyclerViewPhotosList extends RecyclerView.Adapter<AdapterR
     private List<Photo> photos = new ArrayList<>();
 
     private Context context;
+    private boolean isLittleView;
+
+    public AdapterRecyclerViewPhotosList(boolean isLittleView) {
+        this.isLittleView = isLittleView;
+    }
 
     @Override
     public ViewHolderPhoto onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         context = parent.getContext();
         LayoutInflater inflate = LayoutInflater.from(context);
         View view = inflate.inflate(R.layout.item_photo, parent, false);
+
+        ViewGroup.LayoutParams params = view.getLayoutParams();
+        final float scale = context.getResources().getDisplayMetrics().density;
+
+        if(isLittleView) {
+
+            int pixelsLt = (int) (100 * scale + 0.5f);
+            params.width = pixelsLt;
+            params.height = pixelsLt;
+            view.setLayoutParams(params);
+        }else{
+            int pixelsBg = (int) (350 * scale + 0.5f);
+            params.height = pixelsBg;
+            view.setLayoutParams(params);
+        }
+
         return new AdapterRecyclerViewPhotosList.ViewHolderPhoto(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolderPhoto holder, int position) {
-        holder.bind(photos.get(position));
+        holder.bind(photos.get(position), isLittleView, context);
     }
 
     @Override
@@ -61,9 +82,15 @@ public class AdapterRecyclerViewPhotosList extends RecyclerView.Adapter<AdapterR
             this.description = itemView.findViewById(R.id.item_photo_description);
         }
 
-        public void bind(Photo photo){
+        public void bind(Photo photo, boolean isLittleView, Context context){
             description.setText(photo.getDescription());
             picture.setImageBitmap(photo.getBitmapPhoto());
+            if(!isLittleView){
+                final float scale = context.getResources().getDisplayMetrics().density;
+                int pixelsPadding = (int) (15 * scale + 0.5f);
+                description.setPadding(pixelsPadding, pixelsPadding,pixelsPadding,pixelsPadding);
+                description.setTextSize(30);
+            }
         }
     }
 }

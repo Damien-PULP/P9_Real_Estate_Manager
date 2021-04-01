@@ -4,6 +4,10 @@
 
 package com.openclassrooms.realestatemanager.view.viewmodel;
 
+import android.app.Activity;
+import android.content.Context;
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
@@ -18,6 +22,7 @@ import com.openclassrooms.realestatemanager.model.PointOfInterest;
 import com.openclassrooms.realestatemanager.model.Property;
 import com.openclassrooms.realestatemanager.model.PropertyObj;
 import com.openclassrooms.realestatemanager.model.User;
+import com.openclassrooms.realestatemanager.view.activity.MainActivity;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -73,6 +78,7 @@ public class MainViewModel extends ViewModel {
                     photo.setIdProperty(id);
                     propertyDataSource.createPhoto(photo);
                 }
+
                 for(PointOfInterest pointOfInterest : pointOfInterests){
                     pointOfInterest.setIdProperty(id);
                     propertyDataSource.createPointOfInterest(pointOfInterest);
@@ -88,6 +94,10 @@ public class MainViewModel extends ViewModel {
         }else{
             return null;
         }
+    }
+
+    public LiveData<Photo> getAPhoto (long id){
+        return propertyDataSource.getAPhoto(id);
     }
 
     public LiveData<PropertyObj> getAPropertyObj (long idProperty){

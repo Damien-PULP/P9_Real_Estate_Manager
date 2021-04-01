@@ -2,6 +2,7 @@ package com.openclassrooms.realestatemanager.view.fragment;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.openclassrooms.realestatemanager.R;
+import com.openclassrooms.realestatemanager.model.Photo;
 import com.openclassrooms.realestatemanager.model.Property;
 import com.openclassrooms.realestatemanager.model.PropertyObj;
 import com.openclassrooms.realestatemanager.model.User;
@@ -80,6 +82,11 @@ public class MainFragment extends Fragment {
 
     private void updateUIWithProperties(List<PropertyObj> propertyObjs) {
         adapter.updateData(propertyObjs);
+        //mainViewModel.getAPhoto(propertyObjs.get(0).getProperty().getId()).observe(Objects.requireNonNull(getActivity()), this::getAPhotoIsCompleted);
+    }
+
+    private void getAPhotoIsCompleted(Photo photo) {
+        if(photo.getBitmapPhoto() != null) Log.d("MainFragment", "the photo is" + photo.getBitmapPhoto().toString());
     }
 
 }

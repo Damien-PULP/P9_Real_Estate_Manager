@@ -98,7 +98,7 @@ public class AddFragment extends Fragment {
         recyclerViewPhotos = root.findViewById(R.id.add_fragment_recycler_view_photos);
 
         recyclerViewPhotos.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-        adapter = new AdapterRecyclerViewPhotosList();
+        adapter = new AdapterRecyclerViewPhotosList(true);
         recyclerViewPhotos.setAdapter(adapter);
 
         btnAddPhotoProperty.setOnClickListener(v ->{
@@ -128,12 +128,12 @@ public class AddFragment extends Fragment {
             Address address = new Address("USA", "New-York", "1000", "Mega streetzer", 666, 0);
             Photo photo = new Photo(null, description, 0);
             PointOfInterest pointOfInterest = new PointOfInterest("School", 0);
-            List<Photo> photoList = new ArrayList<>();
+            //List<Photo> photoList = new ArrayList<>();
             List<PointOfInterest> pointOfInterests = new ArrayList<>();
-            photoList.add(photo);
+            //photoList.add(photo);
             pointOfInterests.add(pointOfInterest);
 
-            mainViewModel.insertProperty(property, address, photoList, pointOfInterests);
+            mainViewModel.insertProperty(property, address, mainViewModel.getPhotosOfTheProperty(), pointOfInterests);
         }
     }
 
@@ -144,8 +144,12 @@ public class AddFragment extends Fragment {
         View v = inflater.inflate(R.layout.dialog_edit_picture, null);
         alertDialogBuilder.setView(v);
         alertDialogBuilder.setPositiveButton("Add", ((dialogInterface, i) -> {
-            List<Photo> photos = Arrays.asList(new Photo(bitmap, "input", 0));
-            adapter.updateData(photos);
+            if(dialogInputDescription.getEditText() != null) {
+                String description = dialogInputDescription.getEditText().getText().toString();
+                Photo photo = new Photo(bitmap, description, 0);
+                mainViewModel.addPhotoOfTheProperty(photo);
+                adapter.updateData(mainViewModel.getPhotosOfTheProperty());
+            }
         }));
         alertDialogBuilder.setNegativeButton("Cancel", null);
 
@@ -153,9 +157,10 @@ public class AddFragment extends Fragment {
         dialog.show();
 
         ImageView imgVPicture = dialog.findViewById(R.id.dialog_edit_picture);
+        imgVPicture.setImageBitmap(bitmap);
         dialogInputDescription = dialog.findViewById(R.id.dialog_edit_picture_description_input);
 
-        imgVPicture.setImageBitmap(bitmap);
+
     }
 
     @Override

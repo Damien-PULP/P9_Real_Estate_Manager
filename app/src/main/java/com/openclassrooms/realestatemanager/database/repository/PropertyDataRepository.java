@@ -37,6 +37,7 @@ public class PropertyDataRepository {
     public LiveData<PropertyObj> getAPropertyObj (long idProperty){ return this.propertyDao.getAPropertyObj(idProperty); }
     public LiveData<Address> getAddress (long idProperty){ return this.addressDao.getAddress(idProperty); }
     public LiveData<List<Photo>> getPhotos (long idProperty){ return this.photoDao.getPhotos(idProperty);}
+    public LiveData<Photo> getAPhoto (long idPhoto){ return this.photoDao.getAPhoto(idPhoto); }
     public LiveData<List<PointOfInterest>> getPointOfInterests (long idProperty) { return this.pointOfInterestDao.getPointsOfInterest(idProperty); }
     public LiveData<List<PropertyObj>> getPropertyWithAttributes (long idUser) { return this.propertyDao.getPropertyWithAllAttribute(idUser); }
     /*LiveData<List<PropertyAttribute>> getPropertiesWithAttributes (Property property, User user){
@@ -50,8 +51,8 @@ public class PropertyDataRepository {
     public void createAddress (Address address){
         this.addressDao.insertAddress(address);
     }
-    public void createPhoto (Photo photo){
-        this.photoDao.insertPhoto(photo);
+    public long createPhoto (Photo photo){
+        return this.photoDao.insertPhoto(photo);
     }
     public void createPointOfInterest(PointOfInterest pointOfInterest){
         this.pointOfInterestDao.insertPointOfInterest(pointOfInterest);

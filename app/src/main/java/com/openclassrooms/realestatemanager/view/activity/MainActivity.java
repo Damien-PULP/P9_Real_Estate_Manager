@@ -108,11 +108,15 @@ public class MainActivity extends AppCompatActivity {
         if(index == 1 && findViewById(R.id.activity_main_frame_detail) == null){
             if(getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_main) != null) {
                 if (Objects.requireNonNull(getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_main)).getClass() == DetailFragment.class) {
-                    detailFragment = (DetailFragment) getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_detail);
+                    detailFragment = (DetailFragment) getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_main);
                 }
             }
             if(detailFragment == null){
                 detailFragment = new DetailFragment();
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.activity_main_frame_main, detailFragment)
+                        .commit();
+            }else{
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.activity_main_frame_main, detailFragment)
                         .commit();
