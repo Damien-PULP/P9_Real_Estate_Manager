@@ -51,12 +51,20 @@
         app:layout_constraintTop_toBottomOf="@id/fragment_detail_edit_button"/>
 
     <TextView
-        android:id="@+id/fragment_detail_sub_title_description"
-        android:text="Description"
+        android:id="@+id/fragment_detail_type"
+        android:text="House"
         style="@style/TextAppearance.MaterialComponents.Headline6"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/fragment_detail_photos_recycler_view"/>
+
+    <TextView
+        android:id="@+id/fragment_detail_sub_title_description"
+        android:text="Description"
+        style="@style/TextAppearance.MaterialComponents.Subtitle1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/fragment_detail_type"/>
 
     <TextView
         android:id="@+id/fragment_detail_description"
@@ -88,7 +96,17 @@
                 app:drawableStartCompat="@drawable/ic_baseline_dimen_24" />
 
             <TextView
+                android:id="@+id/fragment_detail_area"
                 android:text="300m2"
+                style="@style/TextAppearance.MaterialComponents.Body1"
+                android:layout_marginTop="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"/>
+
+            <TextView
+                android:id="@+id/fragment_detail_nb_room"
+                android:text="18 rooms"
                 style="@style/TextAppearance.MaterialComponents.Body1"
                 android:layout_marginTop="8dp"
                 android:layout_width="match_parent"
@@ -105,6 +123,7 @@
                 />
 
             <TextView
+                android:id="@+id/fragment_detail_pris"
                 android:text="1.700.000"
                 style="@style/TextAppearance.MaterialComponents.Body1"
                 android:layout_marginTop="8dp"
@@ -129,6 +148,7 @@
                 app:drawableStartCompat="@drawable/ic_baseline_location_on_24" />
 
             <TextView
+                android:id="@+id/fragment_detail_location"
                 android:text="New - York, 993 , mega street 666 "
                 style="@style/TextAppearance.MaterialComponents.Body1"
                 android:layout_marginTop="8dp"

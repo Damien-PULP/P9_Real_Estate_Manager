@@ -26,6 +26,7 @@ import com.openclassrooms.realestatemanager.view.viewmodel.ViewModelFactory;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 public class MainFragment extends Fragment {
 
@@ -51,7 +52,7 @@ public class MainFragment extends Fragment {
 
     private void configureViewModel() {
         ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(getActivity());
-        this.mainViewModel = new ViewModelProvider(this, viewModelFactory).get(MainViewModel.class);
+        this.mainViewModel = new ViewModelProvider(Objects.requireNonNull(getActivity()), viewModelFactory).get(MainViewModel.class);
         mainViewModel.init();
     }
 

@@ -18,6 +18,7 @@ public class Property {
     @NonNull private String type;
     @NonNull private float pris;
     @NonNull private int nbRoom;
+    @NonNull private int area;
     @NonNull private String description;
     @NonNull private String state;
     @NonNull private Date dateEnter;
@@ -26,10 +27,11 @@ public class Property {
 
     public Property() {
     }
-    public Property(@NonNull String type, float pris, int nbRoom, @NonNull String description, @NonNull String state, @NonNull Date dateEnter, Date dateSold, long idAgent) {
+    public Property(@NonNull String type, float pris, int nbRoom, @NonNull int area, @NonNull String description, @NonNull String state, @NonNull Date dateEnter, Date dateSold, long idAgent) {
         this.type = type;
         this.pris = pris;
         this.nbRoom = nbRoom;
+        this.area = area;
         this.description = description;
         this.state = state;
         this.dateEnter = dateEnter;
@@ -47,6 +49,9 @@ public class Property {
     }
     public int getNbRoom() {
         return nbRoom;
+    }
+    public int getArea() {
+        return area;
     }
     @NonNull
     public String getDescription() {
@@ -79,6 +84,9 @@ public class Property {
     }
     public void setNbRoom(int nbRoom) {
         this.nbRoom = nbRoom;
+    }
+    public void setArea(int area) {
+        this.area = area;
     }
     public void setDescription(@NonNull String description) {
         this.description = description;

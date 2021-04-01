@@ -3,6 +3,8 @@
  */
 package com.openclassrooms.realestatemanager.model;
 
+import android.graphics.Bitmap;
+
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
@@ -15,15 +17,15 @@ public class Photo {
 
     @PrimaryKey(autoGenerate = true) @NonNull
     private long id;
-    @NonNull private String pathIcon;
+    @NonNull private Bitmap bitmapPhoto;
     private String description;
     @NonNull private long idProperty;
 
     //Need empty constructor
     public Photo() {
     }
-    public Photo(@NonNull String pathIcon, String description, @NonNull long idProperty) {
-        this.pathIcon = pathIcon;
+    public Photo(@NonNull Bitmap bitmapPhoto, String description, @NonNull long idProperty) {
+        this.bitmapPhoto = bitmapPhoto;
         this.description = description;
         this.idProperty = idProperty;
     }
@@ -34,8 +36,8 @@ public class Photo {
         return id;
     }
     @NonNull
-    public String getPathIcon() {
-        return pathIcon;
+    public Bitmap getBitmapPhoto() {
+        return bitmapPhoto;
     }
     public String getDescription() {
         return description;
@@ -49,8 +51,8 @@ public class Photo {
     public void setId(@NonNull long id) {
         this.id = id;
     }
-    public void setPathIcon(@NonNull String pathIcon) {
-        this.pathIcon = pathIcon;
+    public void setBitmapPhoto(@NonNull Bitmap btmIcon) {
+        this.bitmapPhoto = bitmapPhoto;
     }
     public void setDescription(String description) {
         this.description = description;

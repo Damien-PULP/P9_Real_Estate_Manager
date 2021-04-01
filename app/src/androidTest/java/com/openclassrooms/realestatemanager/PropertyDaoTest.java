@@ -15,7 +15,6 @@ import com.openclassrooms.realestatemanager.model.Address;
 import com.openclassrooms.realestatemanager.model.Photo;
 import com.openclassrooms.realestatemanager.model.PointOfInterest;
 import com.openclassrooms.realestatemanager.model.Property;
-import com.openclassrooms.realestatemanager.model.PropertyAttribute;
 import com.openclassrooms.realestatemanager.model.PropertyObj;
 import com.openclassrooms.realestatemanager.model.User;
 
@@ -42,10 +41,10 @@ public class PropertyDaoTest {
     private static User user = new User("Damien", "De Lombaert", "email@gmail.com", "0404560844", "pathIcon", "password");
     // PROPERTY DATA
     private static Address address = new Address("United State", "New-York", "10000", "IdontKnow", 66, 0);
-    private static Photo photo1 = new Photo("/user/picture/photo1.jpg", "Bed room 1", 0);
-    private static Photo photo2 = new Photo("/user/picture/photo2.jpg", "WC", 0);
+    private static Photo photo1 = new Photo(null, "Bed room 1", 0);
+    private static Photo photo2 = new Photo(null, "WC", 0);
     private static PointOfInterest pointOfInterest = new PointOfInterest("school", 0);
-    private static Property property = new Property("House", 1700000f, 12, "Amazing house !!", "Not sell", new Date(), new Date(), uId);
+    private static Property property = new Property("House", 1700000f, 12, 200, "Amazing house !!", "Not sell", new Date(), new Date(), uId);
 
     @Rule
     public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
@@ -116,8 +115,8 @@ public class PropertyDaoTest {
 
         assertTrue(propertiesDb.get(0).getDescription().equals(property.getDescription())
                 && propertiesDb.get(0).getPris() == property.getPris()
-                && photos.get(0).getPathIcon().equals(photo1OfProperty.getPathIcon())
-                && photos.get(1).getPathIcon().equals(photo2OfProperty.getPathIcon()));
+                && photos.get(0).getBitmapPhoto().equals(photo1OfProperty.getBitmapPhoto())
+                && photos.get(1).getBitmapPhoto().equals(photo2OfProperty.getBitmapPhoto()));
     }
 
     @Test

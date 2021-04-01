@@ -24,6 +24,10 @@ public interface PropertyDao {
     @Query("SELECT * FROM Property WHERE idAgent = :userId")
     LiveData<List<Property>> getProperty(long userId);
 
+    @Query("SELECT * FROM Property WHERE id = :idProperty")
+    LiveData<PropertyObj> getAPropertyObj(long idProperty);
+
+
     @Insert
     long insertProperty (Property property);
 

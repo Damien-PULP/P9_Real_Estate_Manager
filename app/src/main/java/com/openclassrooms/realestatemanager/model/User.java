@@ -27,7 +27,7 @@ public class User {
     public User() {
     }
     public User( @NonNull String firstName, @NonNull String secondName, @NonNull String email, @NonNull String phoneNumber, @NonNull String icon, @NonNull String password) {
-        this.id = Utils.getRandomLong();
+        this.id = 1;
         this.firstName = firstName;
         this.secondName = secondName;
         this.email = email;

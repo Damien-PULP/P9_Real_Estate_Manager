@@ -71,13 +71,14 @@ public class AdapterRecyclerViewPropertyList extends RecyclerView.Adapter<Adapte
                 MainActivity activity = (MainActivity) context;
 
                 activity.switchFragment(1);
+                activity.setCurrentProperty(propertyObj.getProperty().getId());
                 // TODO verify if is fine
                 adapter.currentSelection = getAdapterPosition();
                 adapter.notifyDataSetChanged();
             });
 
             type.setText(propertyObj.getProperty().getType());
-            pris.setText("$" + String.valueOf(propertyObj.getProperty().getPris()));
+            pris.setText("$" + (propertyObj.getProperty().getPris()));
         }
         public void adaptTheTracking (boolean isSelected){
             if(isSelected){

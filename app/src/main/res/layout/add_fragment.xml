@@ -3,18 +3,33 @@
   ~ Copyright (c) 2021. This code has been written by Damien De Lombaert
   -->
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_margin="8dp"
     android:orientation="vertical">
 
-    <ImageButton
-        android:id="@+id/add_fragment_add_photo_button"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:src="@drawable/ic_baseline_add_24"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/add_fragment_add_photo_button"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/ic_baseline_add_24"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/add_fragment_recycler_view_photos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            tools:listitem="@layout/item_photo"
+            tools:itemCount="1"/>
+    </LinearLayout>
+
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/add_fragment_type_edit"
@@ -51,6 +66,21 @@
         android:layout_height="wrap_content"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:hint="room quantity"
+        >
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            >
+        </com.google.android.material.textfield.TextInputEditText>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/add_fragment_area_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:hint="area"
         >
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"

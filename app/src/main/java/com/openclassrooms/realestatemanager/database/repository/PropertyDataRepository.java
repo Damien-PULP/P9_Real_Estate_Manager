@@ -14,9 +14,7 @@ import com.openclassrooms.realestatemanager.model.Address;
 import com.openclassrooms.realestatemanager.model.Photo;
 import com.openclassrooms.realestatemanager.model.PointOfInterest;
 import com.openclassrooms.realestatemanager.model.Property;
-import com.openclassrooms.realestatemanager.model.PropertyAttribute;
 import com.openclassrooms.realestatemanager.model.PropertyObj;
-import com.openclassrooms.realestatemanager.model.User;
 
 import java.util.List;
 
@@ -36,6 +34,7 @@ public class PropertyDataRepository {
 
     // GET
     public LiveData<List<Property>> getProperties (long uId){ return this.propertyDao.getProperty(uId); }
+    public LiveData<PropertyObj> getAPropertyObj (long idProperty){ return this.propertyDao.getAPropertyObj(idProperty); }
     public LiveData<Address> getAddress (long idProperty){ return this.addressDao.getAddress(idProperty); }
     public LiveData<List<Photo>> getPhotos (long idProperty){ return this.photoDao.getPhotos(idProperty);}
     public LiveData<List<PointOfInterest>> getPointOfInterests (long idProperty) { return this.pointOfInterestDao.getPointsOfInterest(idProperty); }
@@ -45,8 +44,8 @@ public class PropertyDataRepository {
     }*/
 
     // CREATE
-    public void createProperty (Property property){
-        this.propertyDao.insertProperty(property);
+    public long createProperty (Property property){
+        return this.propertyDao.insertProperty(property);
     }
     public void createAddress (Address address){
         this.addressDao.insertAddress(address);

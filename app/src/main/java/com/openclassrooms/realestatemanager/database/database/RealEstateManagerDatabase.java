@@ -4,12 +4,10 @@
 
 package com.openclassrooms.realestatemanager.database.database;
 
-import android.content.ContentValues;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.room.Database;
-import androidx.room.OnConflictStrategy;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
@@ -25,10 +23,10 @@ import com.openclassrooms.realestatemanager.model.Photo;
 import com.openclassrooms.realestatemanager.model.PointOfInterest;
 import com.openclassrooms.realestatemanager.model.Property;
 import com.openclassrooms.realestatemanager.model.User;
-import com.openclassrooms.realestatemanager.utils.DateConverter;
+import com.openclassrooms.realestatemanager.utils.ConverterRoom;
 
-@Database(entities = {User.class, Property.class, Address.class, Photo.class, PointOfInterest.class}, version = 1, exportSchema = false)
-@TypeConverters({DateConverter.class})
+@Database(entities = {User.class, Property.class, Address.class, Photo.class, PointOfInterest.class}, version = 5, exportSchema = false)
+@TypeConverters({ConverterRoom.class})
 public abstract class RealEstateManagerDatabase extends RoomDatabase {
 
     // SINGLETON
@@ -47,6 +45,7 @@ public abstract class RealEstateManagerDatabase extends RoomDatabase {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                             RealEstateManagerDatabase.class, "RealEstateManagerDatabase.db")
                             .addCallback(prepopulateDatabase())
+                            .fallbackToDestructiveMigration()
                             .build();
                 }
             }
@@ -60,7 +59,8 @@ public abstract class RealEstateManagerDatabase extends RoomDatabase {
             public void onCreate(@NonNull SupportSQLiteDatabase db) {
                 super.onCreate(db);
 
-               /* ContentValues contentValues = new ContentValues();
+                /* TODO Suppress When account is here */
+                /*ContentValues contentValues = new ContentValues();
                 contentValues.put("id", "1");
                 contentValues.put("firstName", "firstName");
                 contentValues.put("email", "email");

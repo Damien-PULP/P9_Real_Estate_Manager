@@ -17,6 +17,8 @@ import com.openclassrooms.realestatemanager.view.viewmodel.Injection;
 import com.openclassrooms.realestatemanager.view.viewmodel.MainViewModel;
 import com.openclassrooms.realestatemanager.view.viewmodel.ViewModelFactory;
 
+import java.util.Objects;
+
 public class MainActivity extends AppCompatActivity {
 
 
@@ -44,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     private void updateUIWithData() {
         /* TODO Suppress just for init */
         mainViewModel.init();
+        mainViewModel.insertUser("User", "user", "user@email.com", "0448888888", "iconpath", "password");
         mainViewModel.getUser().observe(this, this::successGetCurrentUser);
     }
 
@@ -74,25 +77,40 @@ public class MainActivity extends AppCompatActivity {
 
     private void configureFragment() {
 
-        mainFragment = (MainFragment) getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_main);
+        if(getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_main) != null) {
+            if (Objects.requireNonNull(getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_main)).getClass() == MainFragment.class) {
+                mainFragment = (MainFragment) getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_main);
+            }
+        }
+
         if(mainFragment == null){
             mainFragment = new MainFragment();
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.activity_main_frame_main, mainFragment)
+                    .replace(R.id.activity_main_frame_main, mainFragment)
                     .commit();
         }
         //DOUBLE VIEW LARGE SCREEN
-        detailFragment = (DetailFragment) getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_detail);
+
+        if(getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_main) != null) {
+            if (Objects.requireNonNull(getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_main)).getClass() == DetailFragment.class) {
+                detailFragment = (DetailFragment) getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_detail);
+            }
+        }
+
         if(detailFragment == null && findViewById(R.id.activity_main_frame_detail) != null){
             detailFragment = new DetailFragment();
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.activity_main_frame_detail, detailFragment)
+                    .replace(R.id.activity_main_frame_detail, detailFragment)
                     .commit();
         }
     }
     public void switchFragment (int index){
         if(index == 1 && findViewById(R.id.activity_main_frame_detail) == null){
-            detailFragment = (DetailFragment) getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_detail);
+            if(getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_main) != null) {
+                if (Objects.requireNonNull(getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_main)).getClass() == DetailFragment.class) {
+                    detailFragment = (DetailFragment) getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_detail);
+                }
+            }
             if(detailFragment == null){
                 detailFragment = new DetailFragment();
                 getSupportFragmentManager().beginTransaction()
@@ -100,7 +118,11 @@ public class MainActivity extends AppCompatActivity {
                         .commit();
             }
         } else if(index == 0){
-           // mainFragment = (MainFragment) getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_main);
+            if(getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_main) != null) {
+                if (Objects.requireNonNull(getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_main)).getClass() == MainFragment.class) {
+                    mainFragment = (MainFragment) getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_main);
+                }
+            }
             if(mainFragment == null){
                 mainFragment = new MainFragment();
             }
@@ -109,7 +131,11 @@ public class MainActivity extends AppCompatActivity {
                     .commit();
 
         } else if (index == 2){
-           // addFragment = (AddFragment) getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_main);
+            if(getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_main) != null) {
+                if (Objects.requireNonNull(getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_main)).getClass() == AddFragment.class) {
+                    addFragment = (AddFragment) getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_main);
+                }
+            }
             if(addFragment == null){
                 addFragment = new AddFragment();
             }
@@ -117,5 +143,8 @@ public class MainActivity extends AppCompatActivity {
                     .replace(R.id.activity_main_frame_main, addFragment)
                     .commit();
         }
+    }
+    public void setCurrentProperty(long id){
+        mainViewModel.setCurrentIndexPropertyDetail(id);
     }
 }

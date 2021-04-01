@@ -7,14 +7,19 @@ package com.openclassrooms.realestatemanager.view.viewmodel;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.openclassrooms.realestatemanager.database.repository.PropertyDataRepository;
 import com.openclassrooms.realestatemanager.database.repository.UserDataRepository;
+import com.openclassrooms.realestatemanager.model.Address;
+import com.openclassrooms.realestatemanager.model.Photo;
+import com.openclassrooms.realestatemanager.model.PointOfInterest;
 import com.openclassrooms.realestatemanager.model.Property;
 import com.openclassrooms.realestatemanager.model.PropertyObj;
 import com.openclassrooms.realestatemanager.model.User;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -27,6 +32,12 @@ public class MainViewModel extends ViewModel {
 
     @Nullable
     private LiveData<User> currentUser;
+
+    //Temporary data
+    private List<Photo> photosOfAProperty = new ArrayList<>();
+
+    private MutableLiveData<Long> currentIdPropertyDetail = new MutableLiveData<>();
+
 
     public MainViewModel(UserDataRepository userDataSource, PropertyDataRepository propertyDataSource, Executor executor) {
         this.userDataSource = userDataSource;
@@ -51,12 +62,22 @@ public class MainViewModel extends ViewModel {
         });
     }
 
-    public void insertProperty (String type, float pris, int nbRoom, String description, long idUser){
+    public void insertProperty (Property property, Address address, List<Photo> photos, List<PointOfInterest> pointOfInterests){
         executor.execute(()-> {
             if(currentUser != null) {
-                Property property = new Property(type, pris, nbRoom, description, "NOT_SELL", new Date(), null, idUser);
 
-                propertyDataSource.createProperty(property);
+                long id = propertyDataSource.createProperty(property);
+                address.setIdProperty(id);
+                propertyDataSource.createAddress(address);
+                for(Photo photo : photos){
+                    photo.setIdProperty(id);
+                    propertyDataSource.createPhoto(photo);
+                }
+                for(PointOfInterest pointOfInterest : pointOfInterests){
+                    pointOfInterest.setIdProperty(id);
+                    propertyDataSource.createPointOfInterest(pointOfInterest);
+                }
+
             }
         });
     }
@@ -67,5 +88,30 @@ public class MainViewModel extends ViewModel {
         }else{
             return null;
         }
+    }
+
+    public LiveData<PropertyObj> getAPropertyObj (long idProperty){
+        return propertyDataSource.getAPropertyObj(idProperty);
+    }
+
+    public void setCurrentIndexPropertyDetail (long index){
+        currentIdPropertyDetail.setValue(index);
+    }
+    public Long getCurrentIndexPropertyDetail (){
+        return currentIdPropertyDetail.getValue();
+    }
+
+    // For AddFragment - Photos manager
+    public void addPhotoOfTheProperty (Photo photo){
+        photosOfAProperty.add(photo);
+    }
+    public void clearThePhotoListOfTheProperty (){
+        photosOfAProperty.clear();
+    }
+    public void removeAPhotoOfTheProperty (Photo photo){
+        photosOfAProperty.remove(photo);
+    }
+    public List<Photo> getPhotosOfTheProperty (){
+        return photosOfAProperty;
     }
 }

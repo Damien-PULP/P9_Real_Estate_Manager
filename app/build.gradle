@@ -43,4 +43,6 @@ dependencies {
     //RxJava support for Room
     implementation "androidx.room:room-rxjava2:$room_version"
     testImplementation "androidx.room:room-testing:$room_version"
+    //GLIDE
+    implementation 'com.github.bumptech.glide:glide:4.11.0'
 }
