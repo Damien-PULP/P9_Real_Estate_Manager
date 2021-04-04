@@ -25,7 +25,7 @@ import com.openclassrooms.realestatemanager.model.Property;
 import com.openclassrooms.realestatemanager.model.User;
 import com.openclassrooms.realestatemanager.utils.Converters;
 
-@Database(entities = {User.class, Property.class, Address.class, Photo.class, PointOfInterest.class}, version = 5, exportSchema = false)
+@Database(entities = {User.class, Property.class, Address.class, Photo.class, PointOfInterest.class}, version = 6, exportSchema = false)
 @TypeConverters({Converters.class})
 public abstract class RealEstateManagerDatabase extends RoomDatabase {
 
@@ -46,6 +46,7 @@ public abstract class RealEstateManagerDatabase extends RoomDatabase {
                             RealEstateManagerDatabase.class, "RealEstateManagerDatabase.db")
                             .addCallback(prepopulateDatabase())
                             .fallbackToDestructiveMigration()
+                            .allowMainThreadQueries()
                             .build();
                 }
             }

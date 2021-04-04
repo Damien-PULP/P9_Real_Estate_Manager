@@ -20,16 +20,20 @@ public class Address {
     private String street;
     private Integer numberStreet;
     private long idProperty;
+    private double latLocation;
+    private double longLocation;
 
     //Need empty constructor
     public Address() {
     }
-    public Address(String country, String city, String postalCode, String street, Integer numberStreet, long idProperty) {
+    public Address(String country, String city, String postalCode, String street, Integer numberStreet, double latLocation, double longLocation, long idProperty) {
         this.country = country;
         this.city = city;
         this.postalCode = postalCode;
         this.street = street;
         this.numberStreet = numberStreet;
+        this.latLocation = latLocation;
+        this.longLocation = longLocation;
         this.idProperty = idProperty;
     }
 
@@ -55,6 +59,12 @@ public class Address {
     public long getIdProperty() {
         return idProperty;
     }
+    public double getLatLocation() {
+        return latLocation;
+    }
+    public double getLongLocation() {
+        return longLocation;
+    }
 
     //SETTER
     public void setId(long id) {
@@ -78,5 +88,10 @@ public class Address {
     public void setIdProperty(long idProperty) {
         this.idProperty = idProperty;
     }
-
+    public void setLatLocation(double latLocation) {
+        this.latLocation = latLocation;
+    }
+    public void setLongLocation(double longLocation) {
+        this.longLocation = longLocation;
+    }
 }

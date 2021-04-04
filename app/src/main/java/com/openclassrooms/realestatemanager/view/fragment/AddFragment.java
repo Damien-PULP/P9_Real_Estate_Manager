@@ -4,9 +4,11 @@
 
 package com.openclassrooms.realestatemanager.view.fragment;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -19,14 +21,19 @@ import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.material.textfield.TextInputLayout;
 import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.model.Address;
@@ -34,6 +41,7 @@ import com.openclassrooms.realestatemanager.model.Photo;
 import com.openclassrooms.realestatemanager.model.PointOfInterest;
 import com.openclassrooms.realestatemanager.model.Property;
 import com.openclassrooms.realestatemanager.model.User;
+import com.openclassrooms.realestatemanager.utils.Utils;
 import com.openclassrooms.realestatemanager.view.activity.MainActivity;
 import com.openclassrooms.realestatemanager.view.adapter.AdapterRecyclerViewPhotosList;
 import com.openclassrooms.realestatemanager.view.viewmodel.Injection;
@@ -59,8 +67,17 @@ public class AddFragment extends Fragment {
     private TextInputLayout inputNumberRoomProperty;
     private TextInputLayout inputAreaProperty;
     private TextInputLayout inputDescriptionProperty;
+
+    private TextInputLayout inputAddressCountryProperty;
+    private TextInputLayout inputAddressCityProperty;
+    private TextInputLayout inputAddressPostalCodeProperty;
+    private TextInputLayout inputAddressStreetProperty;
+    private TextInputLayout inputAddressNumberStreetProperty;
+
+
     private Button btnAddProperty;
     private RecyclerView recyclerViewPhotos;
+
     private AdapterRecyclerViewPhotosList adapter;
     // Dialog
     private TextInputLayout dialogInputDescription;
@@ -71,12 +88,17 @@ public class AddFragment extends Fragment {
 
     public static final int INPUT_FILE_REQUEST_CODE = 1;
 
+    private FusedLocationProviderClient fusedLocationClient;
+    private double userLatitude;
+    private double userLongitude;
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.add_fragment, container, false);
         configureViewModel();
         getUser();
         configureUI(root);
+        getCurrentLocation();
         return root;
     }
 
@@ -94,6 +116,13 @@ public class AddFragment extends Fragment {
         inputNumberRoomProperty = root.findViewById(R.id.add_fragment_number_room_edit);
         inputAreaProperty = root.findViewById(R.id.add_fragment_area_edit);
         inputDescriptionProperty = root.findViewById(R.id.add_fragment_description_edit);
+
+        inputAddressCountryProperty = root.findViewById(R.id.add_fragment_address_country_edit);
+        inputAddressCityProperty = root.findViewById(R.id.add_fragment_address_city_edit);
+        inputAddressPostalCodeProperty = root.findViewById(R.id.add_fragment_address_postal_code_edit);
+        inputAddressStreetProperty = root.findViewById(R.id.add_fragment_address_street_edit);
+        inputAddressNumberStreetProperty = root.findViewById(R.id.add_fragment_address_number_street_edit);
+
         btnAddProperty = root.findViewById(R.id.add_fragment_valid_button);
         recyclerViewPhotos = root.findViewById(R.id.add_fragment_recycler_view_photos);
 
@@ -122,10 +151,18 @@ public class AddFragment extends Fragment {
         int nbRoom = Integer.parseInt(inputNumberRoomProperty.getEditText().getText().toString());
         int area = Integer.parseInt(inputAreaProperty.getEditText().getText().toString());
         String description = inputDescriptionProperty.getEditText().getText().toString();
+        //Address
+        String addressCountry = inputAddressCountryProperty.getEditText().getText().toString();
+        String addressCity = inputAddressCityProperty.getEditText().getText().toString();
+        String addressPostalCode = inputAddressPostalCodeProperty.getEditText().getText().toString();
+        String addressStreet = inputAddressStreetProperty.getEditText().getText().toString();
+        int addressNumberStreet = Integer.parseInt(inputAddressNumberStreetProperty.getEditText().getText().toString());
+
+        getCurrentLocation();
 
         if(!type.equals("") && pris != 0 && nbRoom != 0 && !description.equals("")){
             Property property = new Property(type, pris, nbRoom, area, description, "NOT_SELL", new Date(), null, currentUser.getId());
-            Address address = new Address("USA", "New-York", "1000", "Mega streetzer", 666, 0);
+            Address address = new Address(addressCountry, addressCity, addressPostalCode,addressStreet, addressNumberStreet,userLatitude, userLongitude, 0);
             Photo photo = new Photo(null, description, 0);
             PointOfInterest pointOfInterest = new PointOfInterest("School", 0);
             //List<Photo> photoList = new ArrayList<>();
@@ -163,6 +200,29 @@ public class AddFragment extends Fragment {
 
     }
 
+    private void getCurrentLocation() {
+        //GET LOCATION
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
+        if (mainViewModel.checkPermissionLocation((MainActivity) getActivity())) {
+            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+            fusedLocationClient.getLastLocation().addOnSuccessListener(getActivity(), location -> {
+                if (location != null) {
+                    userLatitude = location.getLatitude();
+                    userLongitude = location.getLongitude();
+                }
+            });
+        }
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -172,10 +232,42 @@ public class AddFragment extends Fragment {
                 final Uri imageUri = data.getData();
                 final InputStream imageStream = getActivity().getContentResolver().openInputStream(imageUri);
                 final Bitmap bitmap = BitmapFactory.decodeStream(imageStream);
-                showDialogEditPicture(bitmap);
+                Bitmap bitmapCompressed = Utils.compressImage(bitmap);
+                showDialogEditPicture(bitmapCompressed);
 
             } catch (IOException e){
                 e.printStackTrace();
+            }
+        }
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case 1000: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        // TODO: Consider calling
+                        //    ActivityCompat#requestPermissions
+                        // here to request the missing permissions, and then overriding
+                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                        //                                          int[] grantResults)
+                        // to handle the case where the user grants the permission. See the documentation
+                        // for ActivityCompat#requestPermissions for more details.
+                        return;
+                    }
+                    fusedLocationClient.getLastLocation().addOnSuccessListener(getActivity(), location -> {
+                        if (location != null) {
+                            userLatitude = location.getLatitude();
+                            userLongitude = location.getLongitude();
+                        }
+                    });
+                } else {
+                    Toast.makeText(getActivity(), "Permission denied", Toast.LENGTH_SHORT).show();
+                }
+                break;
             }
         }
     }

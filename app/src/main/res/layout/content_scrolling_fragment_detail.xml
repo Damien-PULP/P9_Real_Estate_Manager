@@ -101,6 +101,12 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             />
+
+        <fragment
+            android:id="@+id/fragment_detail_location_maps"
+            android:layout_width="match_parent"
+            android:layout_height="350dp"
+            android:name="com.google.android.gms.maps.SupportMapFragment"/>
     </LinearLayout>
 
 </androidx.core.widget.NestedScrollView>

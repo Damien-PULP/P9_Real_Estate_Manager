@@ -40,7 +40,7 @@ public class PropertyDaoTest {
     private static long uId = 1;
     private static User user = new User("Damien", "De Lombaert", "email@gmail.com", "0404560844", "pathIcon", "password");
     // PROPERTY DATA
-    private static Address address = new Address("United State", "New-York", "10000", "IdontKnow", 66, 0);
+    private static Address address = new Address("United State", "New-York", "10000", "IdontKnow", 66, 1.0, 2.0, 0);
     private static Photo photo1 = new Photo(null, "Bed room 1", 0);
     private static Photo photo2 = new Photo(null, "WC", 0);
     private static PointOfInterest pointOfInterest = new PointOfInterest("school", 0);

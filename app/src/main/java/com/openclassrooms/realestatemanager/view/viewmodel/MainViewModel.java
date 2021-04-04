@@ -4,12 +4,15 @@
 
 package com.openclassrooms.realestatemanager.view.viewmodel;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -42,6 +45,7 @@ public class MainViewModel extends ViewModel {
     private List<Photo> photosOfAProperty = new ArrayList<>();
 
     private MutableLiveData<Long> currentIdPropertyDetail = new MutableLiveData<>();
+    private int locationRequestCode = 100;
 
 
     public MainViewModel(UserDataRepository userDataSource, PropertyDataRepository propertyDataSource, Executor executor) {
@@ -124,4 +128,19 @@ public class MainViewModel extends ViewModel {
     public List<Photo> getPhotosOfTheProperty (){
         return photosOfAProperty;
     }
+    // CHECK PERMISSION LOCATION
+    public boolean checkPermissionLocation (MainActivity activity){
+        // Check location permission
+        if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // request the permission
+            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                    locationRequestCode);
+            return false;
+        } else {
+            // already granted
+            return true;
+        }
+    }
+
 }

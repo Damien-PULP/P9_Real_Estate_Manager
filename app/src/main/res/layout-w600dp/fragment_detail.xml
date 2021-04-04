@@ -173,11 +173,11 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 >
-                <ImageView
+                <fragment
+                    android:id="@+id/fragment_detail_location_maps"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/background_round_border"
-                    android:backgroundTint="@color/colorPrimaryDark"/>
+                    android:layout_height="match_parent"
+                    android:name="com.google.android.gms.maps.SupportMapFragment"/>
             </LinearLayout>
         </LinearLayout>
 
