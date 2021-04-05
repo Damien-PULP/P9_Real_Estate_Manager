@@ -34,6 +34,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.textfield.TextInputLayout;
 import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.model.Address;
@@ -74,6 +76,8 @@ public class AddFragment extends Fragment {
     private TextInputLayout inputAddressStreetProperty;
     private TextInputLayout inputAddressNumberStreetProperty;
 
+    private ChipGroup chipGroupPointOfInterestProperty;
+    private TextInputLayout inputPointOfInterestProperty;
 
     private Button btnAddProperty;
     private RecyclerView recyclerViewPhotos;
@@ -105,6 +109,7 @@ public class AddFragment extends Fragment {
     private void getUser() {
         mainViewModel.getUser().observe(getActivity(), this::updateCurrentUser);
     }
+
     private void updateCurrentUser(User user) {
         currentUser = user;
     }
@@ -123,6 +128,18 @@ public class AddFragment extends Fragment {
         inputAddressStreetProperty = root.findViewById(R.id.add_fragment_address_street_edit);
         inputAddressNumberStreetProperty = root.findViewById(R.id.add_fragment_address_number_street_edit);
 
+        chipGroupPointOfInterestProperty = root.findViewById(R.id.add_fragment_point_of_interest_chip_group);
+        inputPointOfInterestProperty = root.findViewById(R.id.add_fragment_point_of_interest_input);
+
+        inputPointOfInterestProperty.setEndIconOnClickListener(v-> {
+            if(!inputPointOfInterestProperty.getEditText().getText().toString().equals("")) {
+                Chip chip = new Chip(getActivity());
+                chip.setText(inputPointOfInterestProperty.getEditText().getText().toString());
+                chipGroupPointOfInterestProperty.addView(chip);
+                inputPointOfInterestProperty.getEditText().setText("");
+            }
+        });
+
         btnAddProperty = root.findViewById(R.id.add_fragment_valid_button);
         recyclerViewPhotos = root.findViewById(R.id.add_fragment_recycler_view_photos);
 
@@ -130,7 +147,7 @@ public class AddFragment extends Fragment {
         adapter = new AdapterRecyclerViewPhotosList(true);
         recyclerViewPhotos.setAdapter(adapter);
 
-        btnAddPhotoProperty.setOnClickListener(v ->{
+        btnAddPhotoProperty.setOnClickListener(v -> {
             Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
             photoPickerIntent.setType("image/*");
             photoPickerIntent.putExtra(Intent.EXTRA_TITLE, "Select a picture");
@@ -139,6 +156,7 @@ public class AddFragment extends Fragment {
         });
         btnAddProperty.setOnClickListener(v -> insertProperty());
     }
+
     private void configureViewModel() {
         ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(getActivity());
         this.mainViewModel = new ViewModelProvider(this, viewModelFactory).get(MainViewModel.class);
@@ -158,30 +176,31 @@ public class AddFragment extends Fragment {
         String addressStreet = inputAddressStreetProperty.getEditText().getText().toString();
         int addressNumberStreet = Integer.parseInt(inputAddressNumberStreetProperty.getEditText().getText().toString());
 
+        List<PointOfInterest> pointsOfInterest = new ArrayList<>();
+        for(int i= 0 ; i < chipGroupPointOfInterestProperty.getChildCount(); i++){
+            Chip chip = (Chip) chipGroupPointOfInterestProperty.getChildAt(i);
+            PointOfInterest pointOfInterest = new PointOfInterest(chip.getText().toString(), 0);
+            pointsOfInterest.add(pointOfInterest);
+        }
+
         getCurrentLocation();
 
-        if(!type.equals("") && pris != 0 && nbRoom != 0 && !description.equals("")){
+        if (!type.equals("") && pris != 0 && nbRoom != 0 && !description.equals("")) {
             Property property = new Property(type, pris, nbRoom, area, description, "NOT_SELL", new Date(), null, currentUser.getId());
-            Address address = new Address(addressCountry, addressCity, addressPostalCode,addressStreet, addressNumberStreet,userLatitude, userLongitude, 0);
-            Photo photo = new Photo(null, description, 0);
-            PointOfInterest pointOfInterest = new PointOfInterest("School", 0);
-            //List<Photo> photoList = new ArrayList<>();
-            List<PointOfInterest> pointOfInterests = new ArrayList<>();
-            //photoList.add(photo);
-            pointOfInterests.add(pointOfInterest);
+            Address address = new Address(addressCountry, addressCity, addressPostalCode, addressStreet, addressNumberStreet, userLatitude, userLongitude, 0);
 
-            mainViewModel.insertProperty(property, address, mainViewModel.getPhotosOfTheProperty(), pointOfInterests);
+            mainViewModel.insertProperty(property, address, mainViewModel.getPhotosOfTheProperty(), pointsOfInterest);
         }
     }
 
-    private void showDialogEditPicture(Bitmap bitmap){
+    private void showDialogEditPicture(Bitmap bitmap) {
         final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
         alertDialogBuilder.setTitle("Define the description");
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View v = inflater.inflate(R.layout.dialog_edit_picture, null);
         alertDialogBuilder.setView(v);
         alertDialogBuilder.setPositiveButton("Add", ((dialogInterface, i) -> {
-            if(dialogInputDescription.getEditText() != null) {
+            if (dialogInputDescription.getEditText() != null) {
                 String description = dialogInputDescription.getEditText().getText().toString();
                 Photo photo = new Photo(bitmap, description, 0);
                 mainViewModel.addPhotoOfTheProperty(photo);
@@ -227,19 +246,20 @@ public class AddFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(resultCode == RESULT_OK){
-            try{
+        if (resultCode == RESULT_OK) {
+            try {
                 final Uri imageUri = data.getData();
                 final InputStream imageStream = getActivity().getContentResolver().openInputStream(imageUri);
                 final Bitmap bitmap = BitmapFactory.decodeStream(imageStream);
                 Bitmap bitmapCompressed = Utils.compressImage(bitmap);
                 showDialogEditPicture(bitmapCompressed);
 
-            } catch (IOException e){
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);

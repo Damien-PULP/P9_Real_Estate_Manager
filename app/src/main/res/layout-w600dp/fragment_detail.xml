@@ -167,6 +167,20 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"/>
 
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/fragment_detail_point_of_interest_chip_group"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:singleLine="true">
+
+                    </com.google.android.material.chip.ChipGroup>
+
+                </HorizontalScrollView>
+
             </LinearLayout>
             <LinearLayout
                 android:layout_width="0dp"

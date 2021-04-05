@@ -87,7 +87,7 @@ public class AdapterRecyclerViewPropertyList extends RecyclerView.Adapter<Adapte
             }
 
             type.setText(propertyObj.getProperty().getType());
-            String locationText = propertyObj.getAddress().getCountry() + ", " +  propertyObj.getAddress().getCountry() + ", " +  propertyObj.getAddress().getPostalCode() + ", " +  propertyObj.getAddress().getStreet() + " " +  propertyObj.getAddress().getNumberStreet();
+            String locationText = propertyObj.getAddress().getCountry() + ", " +  propertyObj.getAddress().getCity() + ", " +  propertyObj.getAddress().getPostalCode() + ", " +  propertyObj.getAddress().getStreet() + " " +  propertyObj.getAddress().getNumberStreet();
             location.setText(locationText);
             pris.setText("$" + (propertyObj.getProperty().getPris()));
         }

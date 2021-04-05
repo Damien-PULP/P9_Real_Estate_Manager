@@ -28,7 +28,10 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.openclassrooms.realestatemanager.R;
+import com.openclassrooms.realestatemanager.model.PointOfInterest;
 import com.openclassrooms.realestatemanager.model.PropertyObj;
 import com.openclassrooms.realestatemanager.view.activity.MainActivity;
 import com.openclassrooms.realestatemanager.view.adapter.AdapterRecyclerViewPhotosList;
@@ -36,6 +39,8 @@ import com.openclassrooms.realestatemanager.view.viewmodel.Injection;
 import com.openclassrooms.realestatemanager.view.viewmodel.MainViewModel;
 import com.openclassrooms.realestatemanager.view.viewmodel.ViewModelFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class DetailFragment extends Fragment implements OnMapReadyCallback {
@@ -48,6 +53,7 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
     private TextView txtNbRoomProperty;
     private TextView txtPrisProperty;
     private RecyclerView recyclerViewPhotosProperty;
+    private ChipGroup chipGroupPointsOfInterestProperty;
 
     private AdapterRecyclerViewPhotosList adapter;
 
@@ -86,16 +92,24 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
     private void updateUIWithData(PropertyObj propertyObj) {
         txtTypeProperty.setText(propertyObj.getProperty().getType());
         txtDescriptionProperty.setText(propertyObj.getProperty().getDescription());
-        String location = propertyObj.getAddress().getCountry() + ", " +  propertyObj.getAddress().getCountry() + ", " +  propertyObj.getAddress().getPostalCode() + ", " +  propertyObj.getAddress().getStreet() + " " +  propertyObj.getAddress().getNumberStreet();
+        String location = propertyObj.getAddress().getCountry() + ", " +  propertyObj.getAddress().getCity() + ", " +  propertyObj.getAddress().getPostalCode() + ", " +  propertyObj.getAddress().getStreet() + " " +  propertyObj.getAddress().getNumberStreet();
         txtLocationProperty.setText(location);
         txtPrisProperty.setText("$" + propertyObj.getProperty().getPris());
         txtAreaProperty.setText(propertyObj.getProperty().getArea() + " m2");
         txtNbRoomProperty.setText(propertyObj.getProperty().getNbRoom() + " rooms");
+
+        List<PointOfInterest> pointOfInterests = propertyObj.getPointOfInterests();
+        for(PointOfInterest pointOfInterest : pointOfInterests){
+            Chip chip = new Chip(getActivity());
+            chip.setText(pointOfInterest.getName());
+            chipGroupPointsOfInterestProperty.addView(chip);
+        }
         //MAP Fragment
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.fragment_detail_location_maps);
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
+
 
         PropertyLocationLatitude = propertyObj.getAddress().getLatLocation();
         PropertyLocationLongitude = propertyObj.getAddress().getLongLocation();
@@ -122,6 +136,7 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
         txtAreaProperty = root.findViewById(R.id.fragment_detail_area);
         txtPrisProperty = root.findViewById(R.id.fragment_detail_pris);
         txtNbRoomProperty = root.findViewById(R.id.fragment_detail_nb_room);
+        chipGroupPointsOfInterestProperty = root.findViewById(R.id.fragment_detail_point_of_interest_chip_group);
         recyclerViewPhotosProperty = root.findViewById(R.id.fragment_detail_photos_recycler_view);
         recyclerViewPhotosProperty.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
         adapter = new AdapterRecyclerViewPhotosList(false);
