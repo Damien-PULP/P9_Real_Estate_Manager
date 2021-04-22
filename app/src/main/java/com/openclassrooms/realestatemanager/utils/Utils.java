@@ -3,12 +3,25 @@ package com.openclassrooms.realestatemanager.utils;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
+
+import androidx.sqlite.db.SimpleSQLiteQuery;
+
+import com.openclassrooms.realestatemanager.model.PointOfInterest;
+import com.openclassrooms.realestatemanager.model.PropertyObj;
+import com.openclassrooms.realestatemanager.model.SearchPropertyModel;
 
 import java.io.ByteArrayOutputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by Philippe on 21/02/2018.
@@ -25,6 +38,9 @@ public class Utils {
     public static int convertDollarToEuro(int dollars){
         return (int) Math.round(dollars * 0.812);
     }
+    public static int convertEuroToDollar(int euro){
+        return (int) Math.round(euro * 1.2);
+    }
 
     /**
      * Conversion de la date d'aujourd'hui en un format plus approprié
@@ -32,7 +48,7 @@ public class Utils {
      * @return
      */
     public static String getTodayDate(){
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         return dateFormat.format(new Date());
     }
 
@@ -43,14 +59,24 @@ public class Utils {
      * @return
      */
     public static Boolean isInternetAvailable(Context context){
-        WifiManager wifi = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
-        return wifi.isWifiEnabled();
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        return (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED || connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED );
     }
 
     public static long getRandomLong (){
         long leftLimit = 1L;
         long rightLimit = 10L;
         return leftLimit + (long) (Math.random() * (rightLimit - leftLimit));
+    }
+
+
+    public static Date subtractTimeToDate(Date date, int days, int month, int year) {
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.setTime(date);
+        if(days != 0) cal.add(Calendar.DATE, -days);
+        if(month != 0) cal.add(Calendar.MONTH, -month);
+        if(year != 0) cal.add(Calendar.YEAR, -year);
+        return cal.getTime();
     }
 
     public static Bitmap compressImage(Bitmap bitmapSource){
@@ -72,5 +98,37 @@ public class Utils {
 
     }
 
+    public static SimpleSQLiteQuery getQueriesByFilter (SearchPropertyModel searchPropertyModel){
+        String request = "SELECT * FROM Property";
+
+        if(searchPropertyModel.isSoldProperty()){
+            request += " WHERE state = 'IS_SELL'";
+        }else{
+            request += " WHERE state = 'NOT_SELL'";
+        }
+        if(searchPropertyModel.getTypeProperty() != null){
+            request += " AND type LIKE '%" + searchPropertyModel.getTypeProperty() + "%'";
+        }
+        if(searchPropertyModel.getMaxSurfaceProperty() > 0 ){
+            request += " AND area BETWEEN '" + searchPropertyModel.getMinSurfaceProperty() + "' AND '" + searchPropertyModel.getMaxSurfaceProperty() + "'";
+        }
+        if(searchPropertyModel.getMaxPrisProperty() > 0){
+            request += " AND pris BETWEEN '" + searchPropertyModel.getMinPrisProperty() + "' AND '" + searchPropertyModel.getMaxPrisProperty() + "'";
+        }
+        return new SimpleSQLiteQuery(request);
+    }
+
+    public static SimpleSQLiteQuery getQueriesByFilterForPointOfInterest (SearchPropertyModel searchPropertyModel){
+        StringBuilder request = new StringBuilder("SELECT * FROM PointOfInterest");
+        List<String> points = searchPropertyModel.getPointOfInterestProperty();
+        if(points.size() > 0){
+            request.append(" WHERE name IN (");
+            for(int i= 0; i< points.size() - 1; i++){
+                request.append("'").append(points.get(i)).append("',");
+            }
+            request.append("'").append(points.get(points.size() - 1)).append("')");
+        }
+        return new SimpleSQLiteQuery(request.toString());
+    }
 
 }

@@ -5,6 +5,7 @@
 package com.openclassrooms.realestatemanager.database.repository;
 
 import androidx.lifecycle.LiveData;
+import androidx.sqlite.db.SimpleSQLiteQuery;
 
 import com.openclassrooms.realestatemanager.database.dao.AddressDao;
 import com.openclassrooms.realestatemanager.database.dao.PhotoDao;
@@ -15,6 +16,8 @@ import com.openclassrooms.realestatemanager.model.Photo;
 import com.openclassrooms.realestatemanager.model.PointOfInterest;
 import com.openclassrooms.realestatemanager.model.Property;
 import com.openclassrooms.realestatemanager.model.PropertyObj;
+import com.openclassrooms.realestatemanager.model.SearchPropertyModel;
+import com.openclassrooms.realestatemanager.utils.Utils;
 
 import java.util.List;
 
@@ -32,6 +35,16 @@ public class PropertyDataRepository {
         this.pointOfInterestDao = pointOfInterestDao;
     }
 
+    // SEARCH
+    public LiveData<List<PropertyObj>> searchPropertyWithFilter (SearchPropertyModel searchPropertyModel){
+        return this.propertyDao.searchPropertyWithFilter(Utils.getQueriesByFilter(searchPropertyModel));
+    }
+    public LiveData<List<PointOfInterest>> getAllPointOfInterest(){
+        return this.pointOfInterestDao.getAllPointsOfInterest();
+    }
+    public LiveData<List<PointOfInterest>> searchPointOfInterestWithFilter(SearchPropertyModel searchPropertyModel){
+        return this.pointOfInterestDao.searchPointOfInterestWithFilter(Utils.getQueriesByFilterForPointOfInterest(searchPropertyModel));
+    }
     // GET
     public LiveData<List<Property>> getProperties (long uId){ return this.propertyDao.getProperty(uId); }
     public LiveData<PropertyObj> getAPropertyObj (long idProperty){ return this.propertyDao.getAPropertyObj(idProperty); }
@@ -58,6 +71,7 @@ public class PropertyDataRepository {
         this.pointOfInterestDao.insertPointOfInterest(pointOfInterest);
     }
     // UPDATE
+    public void updateStateProperty(long id, String state){ this.propertyDao.updateStateProperty(id,state); }
     public void updateProperty (Property property){
         this.propertyDao.updateProperty(property);
     }

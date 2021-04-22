@@ -89,7 +89,14 @@ public class AdapterRecyclerViewPropertyList extends RecyclerView.Adapter<Adapte
             type.setText(propertyObj.getProperty().getType());
             String locationText = propertyObj.getAddress().getCountry() + ", " +  propertyObj.getAddress().getCity() + ", " +  propertyObj.getAddress().getPostalCode() + ", " +  propertyObj.getAddress().getStreet() + " " +  propertyObj.getAddress().getNumberStreet();
             location.setText(locationText);
-            pris.setText("$" + (propertyObj.getProperty().getPris()));
+            if (propertyObj.getProperty().getState().equals("NOT_SELL")){
+                pris.setText("$" + (propertyObj.getProperty().getPris()));
+                item.setAlpha(1f);
+            }else{
+                pris.setText("This property is sell");
+                item.setAlpha(0.5f);
+            }
+
         }
         public void adaptTheTracking (boolean isSelected){
             if(isSelected){

@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout android:layout_width="match_parent"
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
-    
+
+
     <ImageButton
         android:id="@+id/fragment_main_account_button"
         android:layout_width="wrap_content"
@@ -31,11 +33,51 @@
         android:src="@drawable/ic_baseline_search_24"
         android:background="@color/colorTrans"/>
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/fragment_main_alert_filter"
+        app:layout_constraintTop_toBottomOf="@id/fragment_main_search_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+        <ImageButton
+            android:id="@+id/fragment_main_close_filter_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:src="@drawable/ic_baseline_close_24"
+            android:background="@color/colorTrans"
+            android:layout_margin="8dp" />
+
+        <TextView
+            android:text="The filter is active"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            style="@style/TextAppearance.MaterialComponents.Headline6"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/fragment_main_recycler_view"
-        tools:listitem="@layout/item_property"
-        android:layout_marginVertical="?actionBarSize"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/fragment_main_alert_filter"
+        android:layout_marginBottom="?actionBarSize"
+        tools:listitem="@layout/item_property" />
+
+    <ProgressBar
+        android:id="@+id/fragment_main_progress_bar"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

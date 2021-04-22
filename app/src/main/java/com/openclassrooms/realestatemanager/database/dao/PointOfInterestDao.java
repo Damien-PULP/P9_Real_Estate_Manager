@@ -8,19 +8,30 @@ import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.RawQuery;
 import androidx.room.Update;
+import androidx.sqlite.db.SupportSQLiteQuery;
 
 import com.openclassrooms.realestatemanager.model.Photo;
 import com.openclassrooms.realestatemanager.model.PointOfInterest;
+import com.openclassrooms.realestatemanager.model.PropertyObj;
 
 import java.util.List;
 
 @Dao
 public interface PointOfInterestDao {
 
+    /** To Search Point by Name */
+    @RawQuery(observedEntities = PointOfInterest.class)
+    LiveData<List<PointOfInterest>> searchPointOfInterestWithFilter(SupportSQLiteQuery query);
+
     // Point of Interest
     @Query("SELECT * FROM PointOfInterest WHERE id = :idProperty")
     LiveData<List<PointOfInterest>> getPointsOfInterest(long idProperty);
+
+    // TODO Multiple Name
+    @Query("SELECT DISTINCT * FROM PointOfInterest")
+    LiveData<List<PointOfInterest>> getAllPointsOfInterest();
 
     @Insert
     long insertPointOfInterest (PointOfInterest pointOfInterest);

@@ -5,6 +5,7 @@
 package com.openclassrooms.realestatemanager.view.fragment;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +15,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +23,8 @@ import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -43,6 +47,7 @@ import com.openclassrooms.realestatemanager.model.Photo;
 import com.openclassrooms.realestatemanager.model.PointOfInterest;
 import com.openclassrooms.realestatemanager.model.Property;
 import com.openclassrooms.realestatemanager.model.User;
+import com.openclassrooms.realestatemanager.utils.GeoLocation;
 import com.openclassrooms.realestatemanager.utils.Utils;
 import com.openclassrooms.realestatemanager.view.activity.MainActivity;
 import com.openclassrooms.realestatemanager.view.adapter.AdapterRecyclerViewPhotosList;
@@ -60,9 +65,11 @@ import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
 
-public class AddFragment extends Fragment {
+public class AddFragment extends Fragment implements GeoLocation.GeoLocationService {
 
     //UI
+    private LinearLayout layoutParent;
+
     private ImageButton btnAddPhotoProperty;
     private TextInputLayout inputTypeProperty;
     private TextInputLayout inputPrisProperty;
@@ -70,11 +77,17 @@ public class AddFragment extends Fragment {
     private TextInputLayout inputAreaProperty;
     private TextInputLayout inputDescriptionProperty;
 
+    //Address dialog
     private TextInputLayout inputAddressCountryProperty;
     private TextInputLayout inputAddressCityProperty;
     private TextInputLayout inputAddressPostalCodeProperty;
     private TextInputLayout inputAddressStreetProperty;
     private TextInputLayout inputAddressNumberStreetProperty;
+
+    private Button buttonAddressProperty;
+
+    //ProgressBar for Loading
+    private ProgressBar progressBar;
 
     private ChipGroup chipGroupPointOfInterestProperty;
     private TextInputLayout inputPointOfInterestProperty;
@@ -92,9 +105,7 @@ public class AddFragment extends Fragment {
 
     public static final int INPUT_FILE_REQUEST_CODE = 1;
 
-    private FusedLocationProviderClient fusedLocationClient;
-    private double userLatitude;
-    private double userLongitude;
+    private Address addressOfProperty = new Address();
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -102,19 +113,19 @@ public class AddFragment extends Fragment {
         configureViewModel();
         getUser();
         configureUI(root);
-        getCurrentLocation();
         return root;
     }
 
     private void getUser() {
         mainViewModel.getUser().observe(getActivity(), this::updateCurrentUser);
     }
-
     private void updateCurrentUser(User user) {
         currentUser = user;
     }
 
     private void configureUI(View root) {
+        layoutParent = root.findViewById(R.id.add_fragment_linear_layout);
+
         btnAddPhotoProperty = root.findViewById(R.id.add_fragment_add_photo_button);
         inputTypeProperty = root.findViewById(R.id.add_fragment_type_edit);
         inputPrisProperty = root.findViewById(R.id.add_fragment_pris_edit);
@@ -122,11 +133,9 @@ public class AddFragment extends Fragment {
         inputAreaProperty = root.findViewById(R.id.add_fragment_area_edit);
         inputDescriptionProperty = root.findViewById(R.id.add_fragment_description_edit);
 
-        inputAddressCountryProperty = root.findViewById(R.id.add_fragment_address_country_edit);
-        inputAddressCityProperty = root.findViewById(R.id.add_fragment_address_city_edit);
-        inputAddressPostalCodeProperty = root.findViewById(R.id.add_fragment_address_postal_code_edit);
-        inputAddressStreetProperty = root.findViewById(R.id.add_fragment_address_street_edit);
-        inputAddressNumberStreetProperty = root.findViewById(R.id.add_fragment_address_number_street_edit);
+        buttonAddressProperty = root.findViewById(R.id.add_fragment_button_add_address);
+
+        progressBar = root.findViewById(R.id.add_fragment_progressBar);
 
         chipGroupPointOfInterestProperty = root.findViewById(R.id.add_fragment_point_of_interest_chip_group);
         inputPointOfInterestProperty = root.findViewById(R.id.add_fragment_point_of_interest_input);
@@ -139,6 +148,8 @@ public class AddFragment extends Fragment {
                 inputPointOfInterestProperty.getEditText().setText("");
             }
         });
+
+        buttonAddressProperty.setOnClickListener(v -> showDialogEditAddress());
 
         btnAddProperty = root.findViewById(R.id.add_fragment_valid_button);
         recyclerViewPhotos = root.findViewById(R.id.add_fragment_recycler_view_photos);
@@ -169,12 +180,6 @@ public class AddFragment extends Fragment {
         int nbRoom = Integer.parseInt(inputNumberRoomProperty.getEditText().getText().toString());
         int area = Integer.parseInt(inputAreaProperty.getEditText().getText().toString());
         String description = inputDescriptionProperty.getEditText().getText().toString();
-        //Address
-        String addressCountry = inputAddressCountryProperty.getEditText().getText().toString();
-        String addressCity = inputAddressCityProperty.getEditText().getText().toString();
-        String addressPostalCode = inputAddressPostalCodeProperty.getEditText().getText().toString();
-        String addressStreet = inputAddressStreetProperty.getEditText().getText().toString();
-        int addressNumberStreet = Integer.parseInt(inputAddressNumberStreetProperty.getEditText().getText().toString());
 
         List<PointOfInterest> pointsOfInterest = new ArrayList<>();
         for(int i= 0 ; i < chipGroupPointOfInterestProperty.getChildCount(); i++){
@@ -183,16 +188,62 @@ public class AddFragment extends Fragment {
             pointsOfInterest.add(pointOfInterest);
         }
 
-        getCurrentLocation();
-
         if (!type.equals("") && pris != 0 && nbRoom != 0 && !description.equals("")) {
-            Property property = new Property(type, pris, nbRoom, area, description, "NOT_SELL", new Date(), null, currentUser.getId());
-            Address address = new Address(addressCountry, addressCity, addressPostalCode, addressStreet, addressNumberStreet, userLatitude, userLongitude, 0);
+            if(addressOfProperty.getCountry() != null
+                    && addressOfProperty.getCity() != null
+                    && addressOfProperty.getPostalCode() != null
+                    && addressOfProperty.getStreet() != null
+                    && addressOfProperty.getNumberStreet() != null){
+                Property property = new Property(type, pris, nbRoom, area, description, "NOT_SELL", new Date(), null, currentUser.getId());
+                mainViewModel.insertProperty(property, addressOfProperty, mainViewModel.getPhotosOfTheProperty(), pointsOfInterest);
 
-            mainViewModel.insertProperty(property, address, mainViewModel.getPhotosOfTheProperty(), pointsOfInterest);
+                showToastWithText("The property are created !");
+                MainActivity activity = (MainActivity) getActivity();
+                if(activity != null) activity.switchFragment(0);
+            }else{
+                showToastWithText("Complete the address of the property");
+            }
+        }else{
+            showToastWithText("Complete all field");
         }
     }
 
+    private void showDialogEditAddress() {
+        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+        alertDialogBuilder.setTitle("Enter the address");
+        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View v = inflater.inflate(R.layout.dialog_select_address, null);
+        alertDialogBuilder.setView(v);
+        alertDialogBuilder.setPositiveButton("Valid", (((dialogInterface, i) -> {
+            if(inputAddressCountryProperty != null && !inputAddressNumberStreetProperty.getEditText().getText().toString().equals("")){
+                String addressCountry = inputAddressCountryProperty.getEditText().getText().toString();
+                String addressCity = inputAddressCityProperty.getEditText().getText().toString();
+                String addressPostalCode = inputAddressPostalCodeProperty.getEditText().getText().toString();
+                String addressStreet = inputAddressStreetProperty.getEditText().getText().toString();
+                int addressNumberStreet = Integer.parseInt(inputAddressNumberStreetProperty.getEditText().getText().toString());
+
+                String address = addressNumberStreet + " " + addressStreet + ", " + addressPostalCode + ", " + addressCity + ", " + addressCountry;
+                addressOfProperty = new Address(addressCountry, addressCity, addressPostalCode, addressStreet, addressNumberStreet, 0, 0, 0);
+
+                GeoLocation.getLocationOfAddress(address, getActivity(), progressBar, layoutParent, this);
+            }else{
+                showToastWithText("Enter a competed address");
+            }
+
+        })));
+
+        AlertDialog dialog = alertDialogBuilder.create();
+        dialog.show();
+
+        //Address dialog
+        inputAddressCountryProperty = dialog.findViewById(R.id.add_fragment_address_country_edit);
+        inputAddressCityProperty = dialog.findViewById(R.id.add_fragment_address_city_edit);
+        inputAddressPostalCodeProperty = dialog.findViewById(R.id.add_fragment_address_postal_code_edit);
+        inputAddressStreetProperty = dialog.findViewById(R.id.add_fragment_address_street_edit);
+        inputAddressNumberStreetProperty = dialog.findViewById(R.id.add_fragment_address_number_street_edit);
+
+
+    }
     private void showDialogEditPicture(Bitmap bitmap) {
         final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
         alertDialogBuilder.setTitle("Define the description");
@@ -205,6 +256,8 @@ public class AddFragment extends Fragment {
                 Photo photo = new Photo(bitmap, description, 0);
                 mainViewModel.addPhotoOfTheProperty(photo);
                 adapter.updateData(mainViewModel.getPhotosOfTheProperty());
+            }else{
+                Log.e("AddFragment", "Error View");
             }
         }));
         alertDialogBuilder.setNegativeButton("Cancel", null);
@@ -218,28 +271,8 @@ public class AddFragment extends Fragment {
 
 
     }
-
-    private void getCurrentLocation() {
-        //GET LOCATION
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
-        if (mainViewModel.checkPermissionLocation((MainActivity) getActivity())) {
-            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                return;
-            }
-            fusedLocationClient.getLastLocation().addOnSuccessListener(getActivity(), location -> {
-                if (location != null) {
-                    userLatitude = location.getLatitude();
-                    userLongitude = location.getLongitude();
-                }
-            });
-        }
+    private void showToastWithText(String msg){
+        Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -261,34 +294,13 @@ public class AddFragment extends Fragment {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case 1000: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                        // TODO: Consider calling
-                        //    ActivityCompat#requestPermissions
-                        // here to request the missing permissions, and then overriding
-                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                        //                                          int[] grantResults)
-                        // to handle the case where the user grants the permission. See the documentation
-                        // for ActivityCompat#requestPermissions for more details.
-                        return;
-                    }
-                    fusedLocationClient.getLastLocation().addOnSuccessListener(getActivity(), location -> {
-                        if (location != null) {
-                            userLatitude = location.getLatitude();
-                            userLongitude = location.getLongitude();
-                        }
-                    });
-                } else {
-                    Toast.makeText(getActivity(), "Permission denied", Toast.LENGTH_SHORT).show();
-                }
-                break;
-            }
-        }
+    public void onSuccessGetLocation(double latitude, double longitude, String address) {
+        addressOfProperty.setLatLocation(latitude);
+        addressOfProperty.setLongLocation(longitude);
+        buttonAddressProperty.setText(address);
+    }
+    @Override
+    public void onFailureGetLocation() {
+        showToastWithText("Enter a verified address");
     }
 }

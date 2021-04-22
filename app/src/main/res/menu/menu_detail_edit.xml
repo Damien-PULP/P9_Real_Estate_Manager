@@ -1,18 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/fragment_detail_search_button"
         android:enabled="true"
         android:icon="@drawable/ic_baseline_search_24"
-        android:title="search"/>
+        android:title="search"
+        app:showAsAction="always"/>
     <item
         android:id="@+id/fragment_detail_edit_button"
         android:enabled="true"
         android:icon="@drawable/ic_baseline_edit_24"
-        android:title="edit"/>
+        android:title="edit"
+        app:showAsAction="always"/>
     <item
         android:id="@+id/fragment_detail_sell_button"
         android:enabled="true"
         android:icon="@drawable/ic_baseline_attach_money_24"
-        android:title="sell"/>
+        android:title="sell"
+        app:showAsAction="always"/>
 </menu>

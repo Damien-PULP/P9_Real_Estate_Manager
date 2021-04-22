@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void successGetCurrentUser(User user) {
         //Log.d("MainActivity", "The user is " + user.getFirstName());
+
     }
 
     private void configureUI() {
@@ -137,6 +138,14 @@ public class MainActivity extends AppCompatActivity {
                     getSupportFragmentManager().beginTransaction()
                             .replace(R.id.activity_main_frame_main, detailFragment)
                             .commit();
+                }else{
+                    if(getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_main) != null) {
+                        detailFragment = new DetailFragment();
+
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.activity_main_frame_detail, detailFragment)
+                                .commit();
+                    }
                 }
                 break;
             case 2 :

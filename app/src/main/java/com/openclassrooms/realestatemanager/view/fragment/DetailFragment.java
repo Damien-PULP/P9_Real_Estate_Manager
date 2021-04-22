@@ -1,16 +1,21 @@
 package com.openclassrooms.realestatemanager.view.fragment;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.view.menu.ActionMenuItemView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
@@ -46,6 +51,7 @@ import java.util.Objects;
 public class DetailFragment extends Fragment implements OnMapReadyCallback {
 
     //UI
+    private TextView txtStateProperty;
     private TextView txtTypeProperty;
     private TextView txtDescriptionProperty;
     private TextView txtLocationProperty;
@@ -59,16 +65,12 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
 
     private GoogleMap map;
 
-    private FusedLocationProviderClient fusedLocationClient;
-
     private MainViewModel mainViewModel;
     private LiveData<PropertyObj> currentProperty;
 
-    private double userLatitude;
-    private double userLongitude;
-
     private double PropertyLocationLatitude;
     private double PropertyLocationLongitude;
+    private ActionMenuItemView itemSellMenu;
 
 
     @Override
@@ -77,6 +79,7 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
         configureViewModel();
         configureUI(root);
         getData();
+
         return root;
     }
 
@@ -97,17 +100,37 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
         txtPrisProperty.setText("$" + propertyObj.getProperty().getPris());
         txtAreaProperty.setText(propertyObj.getProperty().getArea() + " m2");
         txtNbRoomProperty.setText(propertyObj.getProperty().getNbRoom() + " rooms");
+        if(propertyObj.getProperty().getState().equals("IS_SELL")){
+            txtStateProperty.setVisibility(View.VISIBLE);
+        }else{
+            txtStateProperty.setVisibility(View.GONE);
+        }
 
         List<PointOfInterest> pointOfInterests = propertyObj.getPointOfInterests();
-        for(PointOfInterest pointOfInterest : pointOfInterests){
-            Chip chip = new Chip(getActivity());
-            chip.setText(pointOfInterest.getName());
-            chipGroupPointsOfInterestProperty.addView(chip);
-        }
-        //MAP Fragment
-        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.fragment_detail_location_maps);
-        if (mapFragment != null) {
-            mapFragment.getMapAsync(this);
+
+        MainActivity mainActivity = (MainActivity) getActivity();
+
+        if(mainActivity != null) {
+            for (PointOfInterest pointOfInterest : pointOfInterests) {
+                Chip chip = new Chip(mainActivity);
+                chip.setText(pointOfInterest.getName());
+                chipGroupPointsOfInterestProperty.addView(chip);
+            }
+            if(mainActivity.getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_detail) != null){
+                //LAND VIEW
+                //MAP Fragment
+                SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.fragment_detail_location_maps_land);
+                if (mapFragment != null) {
+                    mapFragment.getMapAsync(this);
+                }
+            }else{
+                //MAP Fragment
+                SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.fragment_detail_location_maps);
+                if (mapFragment != null) {
+                    mapFragment.getMapAsync(this);
+                }
+
+            }
         }
 
 
@@ -115,21 +138,31 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
         PropertyLocationLongitude = propertyObj.getAddress().getLongLocation();
 
         adapter.updateData(propertyObj.getPhotos());
+
+        //MENU
+        if(propertyObj.getProperty().getState().equals("IS_SELL")){
+            itemSellMenu.setOnClickListener(v->showDialogSellProperty(true));
+        }else{
+            itemSellMenu.setOnClickListener(v->showDialogSellProperty(false));
+        }
+
     }
 
 
     private void configureUI(View root) {
+
         if (root.findViewById(R.id.fragment_detail_app_bar) != null) {
             Toolbar toolbar = (Toolbar) root.findViewById(R.id.fragment_detail_toolbar);
             toolbar.setTitle("");
             // toolbar.inflateMenu(R.menu.menu_detail_edit);
             MainActivity activity = (MainActivity) getActivity();
             assert activity != null;
-            activity.setSupportActionBar(toolbar);
+            //activity.setSupportActionBar(toolbar);
             //activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             //CollapsingToolbarLayout toolBarLayout = (CollapsingToolbarLayout) root.findViewById(R.id.fragment_detail_toolbar_layout);
             //toolBarLayout.setTitle("");
         }
+        txtStateProperty = root.findViewById(R.id.fragment_detail_state_text);
         txtTypeProperty = root.findViewById(R.id.fragment_detail_type);
         txtDescriptionProperty = root.findViewById(R.id.fragment_detail_description);
         txtLocationProperty = root.findViewById(R.id.fragment_detail_location);
@@ -142,6 +175,8 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
         adapter = new AdapterRecyclerViewPhotosList(false);
         recyclerViewPhotosProperty.setAdapter(adapter);
 
+        //MENU
+        itemSellMenu = root.findViewById(R.id.fragment_detail_sell_button);
     }
 
     private void configureViewModel() {
@@ -149,6 +184,26 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
         this.mainViewModel = new ViewModelProvider(Objects.requireNonNull(getActivity()), viewModelFactory).get(MainViewModel.class);
         mainViewModel.init();
         Log.d("MainActivity", "The id of property is : " + mainViewModel.getCurrentIndexPropertyDetail());
+    }
+
+    private void showDialogSellProperty (boolean isSell){
+        final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+
+        if(!isSell) {
+            dialogBuilder.setTitle("Are you sure of sell ?");
+            dialogBuilder.setPositiveButton("Sell", (dialogInterface, i) -> {
+                mainViewModel.updateStateOfProperty(mainViewModel.getCurrentIndexPropertyDetail(), "IS_SELL");
+            });
+        }else{
+            dialogBuilder.setTitle("Are you sure you indicate this is unsold ?");
+            dialogBuilder.setPositiveButton("Unsold", (dialogInterface, i) -> {
+                mainViewModel.updateStateOfProperty(mainViewModel.getCurrentIndexPropertyDetail(), "NOT_SELL");
+            });
+        }
+
+        dialogBuilder.setNegativeButton("Cancel", null);
+        AlertDialog dialog = dialogBuilder.create();
+        dialog.show();
     }
 
 

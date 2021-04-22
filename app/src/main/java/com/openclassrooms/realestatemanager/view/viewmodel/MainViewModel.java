@@ -24,6 +24,7 @@ import com.openclassrooms.realestatemanager.model.Photo;
 import com.openclassrooms.realestatemanager.model.PointOfInterest;
 import com.openclassrooms.realestatemanager.model.Property;
 import com.openclassrooms.realestatemanager.model.PropertyObj;
+import com.openclassrooms.realestatemanager.model.SearchPropertyModel;
 import com.openclassrooms.realestatemanager.model.User;
 import com.openclassrooms.realestatemanager.view.activity.MainActivity;
 
@@ -91,7 +92,9 @@ public class MainViewModel extends ViewModel {
             }
         });
     }
-
+    public void updateStateOfProperty(long id, String state){
+        propertyDataSource.updateStateProperty(id, state);
+    }
     public LiveData<List<PropertyObj>> getProperty (long idUser){
         if (currentUser!= null) {
             return propertyDataSource.getPropertyWithAttributes(idUser);
@@ -115,6 +118,14 @@ public class MainViewModel extends ViewModel {
         return currentIdPropertyDetail.getValue();
     }
 
+    // To Search a Property in Database
+    public LiveData<List<PropertyObj>> searchAPropertyWithFilter (SearchPropertyModel searchPropertyModel){
+        return this.propertyDataSource.searchPropertyWithFilter(searchPropertyModel);
+    }
+    public LiveData<List<PointOfInterest>> getAllPointOfInterest (){
+        return this.propertyDataSource.getAllPointOfInterest();
+    }
+    public LiveData<List<PointOfInterest>> searchPointOfInterestByName (SearchPropertyModel searchPropertyModel){ return this.propertyDataSource.searchPointOfInterestWithFilter(searchPropertyModel);}
     // For AddFragment - Photos manager
     public void addPhotoOfTheProperty (Photo photo){
         photosOfAProperty.add(photo);
