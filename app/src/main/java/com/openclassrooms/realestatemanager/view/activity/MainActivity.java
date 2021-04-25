@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -180,5 +181,13 @@ public class MainActivity extends AppCompatActivity {
     }
     public void setCurrentProperty(long id){
         mainViewModel.setCurrentIndexPropertyDetail(id);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intent = getIntent();
+        finish();
+        startActivity(intent);
     }
 }

@@ -4,6 +4,7 @@
 
 package com.openclassrooms.realestatemanager.view.adapter;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.model.Photo;
+import com.openclassrooms.realestatemanager.view.viewmodel.MainViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,10 +28,12 @@ public class AdapterRecyclerViewPhotosList extends RecyclerView.Adapter<AdapterR
     private List<Photo> photos = new ArrayList<>();
 
     private Context context;
-    private boolean isLittleView;
+    private final boolean isLittleView;
+    private final MainViewModel mainViewModel;
 
-    public AdapterRecyclerViewPhotosList(boolean isLittleView) {
+    public AdapterRecyclerViewPhotosList(boolean isLittleView, MainViewModel mainViewModel) {
         this.isLittleView = isLittleView;
+        this.mainViewModel = mainViewModel;
     }
 
     @Override
@@ -53,7 +57,7 @@ public class AdapterRecyclerViewPhotosList extends RecyclerView.Adapter<AdapterR
             view.setLayoutParams(params);
         }
 
-        return new AdapterRecyclerViewPhotosList.ViewHolderPhoto(view);
+        return new AdapterRecyclerViewPhotosList.ViewHolderPhoto(view,  this);
     }
 
     @Override
@@ -70,26 +74,49 @@ public class AdapterRecyclerViewPhotosList extends RecyclerView.Adapter<AdapterR
         this.photos = photos;
         notifyDataSetChanged();
     }
+    public void removeAPhoto(Photo photo){
+        mainViewModel.removeAPhotoOfTheProperty(photo);
+        this.photos.remove(photo);
+        notifyDataSetChanged();
+    }
+    public void addAPhoto (Photo photo){
+        this.photos.add(photo);
+        notifyDataSetChanged();
+    }
 
     static class ViewHolderPhoto extends RecyclerView.ViewHolder {
 
         private ImageView picture;
         private TextView description;
+        private final AdapterRecyclerViewPhotosList adapter;
 
-        public ViewHolderPhoto(@NonNull View itemView) {
+        public ViewHolderPhoto(@NonNull View itemView, AdapterRecyclerViewPhotosList adapter) {
             super(itemView);
             this.picture = itemView.findViewById(R.id.item_photo_picture);
             this.description = itemView.findViewById(R.id.item_photo_description);
+            this.adapter = adapter;
         }
 
-        public void bind(Photo photo, boolean isLittleView, Context context){
+        public void bind(Photo photo, boolean isLittleView, Context context) {
             description.setText(photo.getDescription());
             picture.setImageBitmap(photo.getBitmapPhoto());
-            if(!isLittleView){
+            if (!isLittleView) {
                 final float scale = context.getResources().getDisplayMetrics().density;
                 int pixelsPadding = (int) (15 * scale + 0.5f);
-                description.setPadding(pixelsPadding, pixelsPadding,pixelsPadding,pixelsPadding);
+                description.setPadding(pixelsPadding, pixelsPadding, pixelsPadding, pixelsPadding);
                 description.setTextSize(30);
+            }else{
+                itemView.setOnLongClickListener(v -> {
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    builder.setTitle("Are you sure of remove this picture ?");
+                    builder.setPositiveButton("Yes",(dialogInterface, i) -> {
+                        adapter.removeAPhoto(photo);
+                    });
+                    builder.setNegativeButton("No", null);
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                    return true;
+                });
             }
         }
     }

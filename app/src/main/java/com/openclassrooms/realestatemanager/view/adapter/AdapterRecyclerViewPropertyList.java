@@ -74,8 +74,8 @@ public class AdapterRecyclerViewPropertyList extends RecyclerView.Adapter<Adapte
             item.setOnClickListener(view -> {
                 MainActivity activity = (MainActivity) context;
 
-                activity.switchFragment(1);
                 activity.setCurrentProperty(propertyObj.getProperty().getId());
+                activity.switchFragment(1);
                 // TODO verify if is fine
                 adapter.currentSelection = getAdapterPosition();
                 adapter.notifyDataSetChanged();

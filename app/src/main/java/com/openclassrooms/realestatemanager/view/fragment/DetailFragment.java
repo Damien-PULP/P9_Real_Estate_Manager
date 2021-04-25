@@ -2,7 +2,12 @@ package com.openclassrooms.realestatemanager.view.fragment;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,10 +16,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.view.menu.ActionMenuItemView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
@@ -35,18 +43,27 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.textfield.TextInputLayout;
 import com.openclassrooms.realestatemanager.R;
+import com.openclassrooms.realestatemanager.model.Photo;
 import com.openclassrooms.realestatemanager.model.PointOfInterest;
 import com.openclassrooms.realestatemanager.model.PropertyObj;
+import com.openclassrooms.realestatemanager.utils.Utils;
 import com.openclassrooms.realestatemanager.view.activity.MainActivity;
 import com.openclassrooms.realestatemanager.view.adapter.AdapterRecyclerViewPhotosList;
+import com.openclassrooms.realestatemanager.view.dialog.DialogCalculatorMortgage;
+import com.openclassrooms.realestatemanager.view.dialog.DialogEditProperty;
 import com.openclassrooms.realestatemanager.view.viewmodel.Injection;
 import com.openclassrooms.realestatemanager.view.viewmodel.MainViewModel;
 import com.openclassrooms.realestatemanager.view.viewmodel.ViewModelFactory;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import static android.app.Activity.RESULT_OK;
 
 public class DetailFragment extends Fragment implements OnMapReadyCallback {
 
@@ -60,6 +77,7 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
     private TextView txtPrisProperty;
     private RecyclerView recyclerViewPhotosProperty;
     private ChipGroup chipGroupPointsOfInterestProperty;
+    private Button btnCalculatorMortgage;
 
     private AdapterRecyclerViewPhotosList adapter;
 
@@ -71,6 +89,9 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
     private double PropertyLocationLatitude;
     private double PropertyLocationLongitude;
     private ActionMenuItemView itemSellMenu;
+    private ActionMenuItemView itemEditMenu;
+    private TextInputLayout dialogInputDescription;
+    private DialogEditProperty dialogEditProperty;
 
 
     @Override
@@ -100,6 +121,11 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
         txtPrisProperty.setText("$" + propertyObj.getProperty().getPris());
         txtAreaProperty.setText(propertyObj.getProperty().getArea() + " m2");
         txtNbRoomProperty.setText(propertyObj.getProperty().getNbRoom() + " rooms");
+
+        btnCalculatorMortgage.setOnClickListener(v -> {
+            final DialogCalculatorMortgage dialog = new DialogCalculatorMortgage(getActivity(), propertyObj.getProperty().getPris());
+            dialog.show();
+        });
         if(propertyObj.getProperty().getState().equals("IS_SELL")){
             txtStateProperty.setVisibility(View.VISIBLE);
         }else{
@@ -145,9 +171,12 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
         }else{
             itemSellMenu.setOnClickListener(v->showDialogSellProperty(false));
         }
+        itemEditMenu.setOnClickListener(view -> {
+            dialogEditProperty = new DialogEditProperty(getActivity(), getActivity(), propertyObj, this, mainViewModel);
+            dialogEditProperty.show();
+        });
 
     }
-
 
     private void configureUI(View root) {
 
@@ -171,12 +200,15 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
         txtNbRoomProperty = root.findViewById(R.id.fragment_detail_nb_room);
         chipGroupPointsOfInterestProperty = root.findViewById(R.id.fragment_detail_point_of_interest_chip_group);
         recyclerViewPhotosProperty = root.findViewById(R.id.fragment_detail_photos_recycler_view);
+        btnCalculatorMortgage = root.findViewById(R.id.fragment_detail_calculate_mortgage_button);
+
         recyclerViewPhotosProperty.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-        adapter = new AdapterRecyclerViewPhotosList(false);
+        adapter = new AdapterRecyclerViewPhotosList(false, mainViewModel);
         recyclerViewPhotosProperty.setAdapter(adapter);
 
         //MENU
         itemSellMenu = root.findViewById(R.id.fragment_detail_sell_button);
+        itemEditMenu = root.findViewById(R.id.fragment_detail_edit_button);
     }
 
     private void configureViewModel() {
@@ -206,7 +238,6 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
         dialog.show();
     }
 
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
@@ -216,5 +247,52 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(locationOfUser, 16));
 
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK) {
+            try {
+                final Uri imageUri = data.getData();
+                final InputStream imageStream = getActivity().getContentResolver().openInputStream(imageUri);
+                final Bitmap bitmap = BitmapFactory.decodeStream(imageStream);
+                Bitmap bitmapCompressed = Utils.compressImage(bitmap);
+                showDialogEditPicture(bitmapCompressed);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    //TODO ADAPT
+    private void showDialogEditPicture(Bitmap bitmap) {
+        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+        alertDialogBuilder.setTitle("Define the description");
+        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View v = inflater.inflate(R.layout.dialog_edit_picture, null);
+        alertDialogBuilder.setView(v);
+        alertDialogBuilder.setPositiveButton("Add", ((dialogInterface, i) -> {
+            if (dialogInputDescription.getEditText() != null) {
+                String description = dialogInputDescription.getEditText().getText().toString();
+                Photo photo = new Photo(bitmap, description, 0);
+                mainViewModel.addPhotoOfTheProperty(photo);
+                //dialogEditProperty.addPhotoInAdapter(photo);
+            }else{
+                Log.e("AddFragment", "Error View");
+            }
+        }));
+        alertDialogBuilder.setNegativeButton("Cancel", null);
+
+        AlertDialog dialog = alertDialogBuilder.create();
+        dialog.show();
+
+        ImageView imgVPicture = dialog.findViewById(R.id.dialog_edit_picture);
+        imgVPicture.setImageBitmap(bitmap);
+        dialogInputDescription = dialog.findViewById(R.id.dialog_edit_picture_description_input);
+
+    }
+
+
 
 }

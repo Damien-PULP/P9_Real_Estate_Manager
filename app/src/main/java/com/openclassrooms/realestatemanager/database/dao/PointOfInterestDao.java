@@ -7,6 +7,7 @@ package com.openclassrooms.realestatemanager.database.dao;
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.RawQuery;
 import androidx.room.Update;
@@ -33,7 +34,7 @@ public interface PointOfInterestDao {
     @Query("SELECT DISTINCT * FROM PointOfInterest")
     LiveData<List<PointOfInterest>> getAllPointsOfInterest();
 
-    @Insert
+    @Insert (onConflict = OnConflictStrategy.IGNORE)
     long insertPointOfInterest (PointOfInterest pointOfInterest);
 
     @Update

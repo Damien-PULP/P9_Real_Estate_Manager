@@ -42,4 +42,17 @@ public class UtilsUnitTest {
         cal.setTime(dateToday);
         assertTrue(cal.get(Calendar.DAY_OF_MONTH) == Calendar.getInstance().get(Calendar.DAY_OF_MONTH) && cal.get(Calendar.MONTH) == Calendar.getInstance().get(Calendar.MONTH)  && cal.get(Calendar.YEAR) == Calendar.getInstance().get(Calendar.YEAR));
     }
+
+    @Test
+    public void calculateMortgageTest () {
+        float pris = 500000f;
+        int bring = 50000;
+        int time = 20;
+        float rate = 2.5f;
+
+        float monthlyPris = Utils.calculateMonthlyPayment(pris, bring, time, rate);
+        float totalPris = Utils.calculateTotalPrisOfProperty(monthlyPris, time);
+
+        assertTrue(monthlyPris == 4687.5f && totalPris == 1125000f);
+    }
 }

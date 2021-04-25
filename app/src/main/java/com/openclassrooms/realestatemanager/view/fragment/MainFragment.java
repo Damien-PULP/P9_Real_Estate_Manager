@@ -1,6 +1,10 @@
 package com.openclassrooms.realestatemanager.view.fragment;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,7 +16,9 @@ import android.widget.ProgressBar;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -53,17 +59,23 @@ public class MainFragment extends Fragment implements DialogSearchView.CallbackS
     private MainViewModel mainViewModel;
 
     private User currentUser;
+    private LifecycleOwner activity;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_main, container, false);
+
+        this.activity = getActivity();
         configureViewModel();
         configureUI(root);
         getUser();
         return root;
     }
 
-
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+    }
 
     private void configureViewModel() {
         ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(getActivity());
@@ -105,7 +117,7 @@ public class MainFragment extends Fragment implements DialogSearchView.CallbackS
     }
 
     private void getProperty() {
-        mainViewModel.getProperty(currentUser.getId()).observe(getActivity(), this::updateUIWithProperties);
+        mainViewModel.getProperty(currentUser.getId()).observe(activity, this::updateUIWithProperties);
 
     }
 

@@ -154,4 +154,26 @@ public class MainViewModel extends ViewModel {
         }
     }
 
+    public void updateProperty(Property propertyUpdated, Address addressOfProperty, List<Photo> photosOfTheProperty, List<PointOfInterest> pointsOfInterest) {
+        executor.execute(()-> {
+            if(currentUser != null) {
+
+                propertyDataSource.updateProperty(propertyUpdated);
+                addressOfProperty.setIdProperty(propertyUpdated.getId());
+                propertyDataSource.createAddress(addressOfProperty);
+                propertyDataSource.deletePhotosOfProperty(propertyUpdated.getId());
+                for(Photo photo : photosOfTheProperty){
+                    photo.setIdProperty(propertyUpdated.getId());
+                    propertyDataSource.createPhoto(photo);
+                }
+
+                propertyDataSource.deletePointOfInterestOfProperty(propertyUpdated.getId());
+                for(PointOfInterest pointOfInterest : pointsOfInterest){
+                    pointOfInterest.setIdProperty(propertyUpdated.getId());
+                    propertyDataSource.createPointOfInterest(pointOfInterest);
+                }
+
+            }
+        });
+    }
 }

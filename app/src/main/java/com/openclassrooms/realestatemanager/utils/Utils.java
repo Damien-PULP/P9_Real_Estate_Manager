@@ -63,10 +63,26 @@ public class Utils {
         return (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED || connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED );
     }
 
-    public static long getRandomLong (){
-        long leftLimit = 1L;
-        long rightLimit = 10L;
-        return leftLimit + (long) (Math.random() * (rightLimit - leftLimit));
+    /**
+     * This method is my additional functionality : To calculate mortgage by month
+     * @param pris
+     * @param bring
+     * @param years
+     * @param rate
+     * @return
+     */
+    public static Float calculateMonthlyPayment (float pris, int bring, int years, float rate){
+        return ((pris - bring) / (years * 12)) * rate;
+    }
+
+    /**
+     * This method is my additional functionality : To calculate total mortgage
+     * @param monthlyPris
+     * @param years
+     * @return
+     */
+    public static Float calculateTotalPrisOfProperty (float monthlyPris, int years){
+        return monthlyPris * years * 12;
     }
 
 

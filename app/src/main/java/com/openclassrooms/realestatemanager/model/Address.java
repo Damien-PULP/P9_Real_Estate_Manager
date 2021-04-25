@@ -94,4 +94,9 @@ public class Address {
     public void setLongLocation(double longLocation) {
         this.longLocation = longLocation;
     }
+
+    @Override
+    public String toString() {
+        return country + ", " + city + ", " + postalCode + ", " + street + " " + numberStreet;
+    }
 }

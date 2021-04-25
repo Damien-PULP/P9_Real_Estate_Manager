@@ -2,47 +2,28 @@
  * Copyright (c) 2021. This code has been written by Damien De Lombaert
  */
 
-package com.openclassrooms.realestatemanager.view.fragment;
+package com.openclassrooms.realestatemanager.view.dialog;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.textfield.TextInputLayout;
@@ -51,28 +32,20 @@ import com.openclassrooms.realestatemanager.model.Address;
 import com.openclassrooms.realestatemanager.model.Photo;
 import com.openclassrooms.realestatemanager.model.PointOfInterest;
 import com.openclassrooms.realestatemanager.model.Property;
-import com.openclassrooms.realestatemanager.model.User;
+import com.openclassrooms.realestatemanager.model.PropertyObj;
 import com.openclassrooms.realestatemanager.utils.GeoLocation;
-import com.openclassrooms.realestatemanager.utils.Utils;
 import com.openclassrooms.realestatemanager.view.activity.MainActivity;
 import com.openclassrooms.realestatemanager.view.adapter.AdapterRecyclerViewPhotosList;
-import com.openclassrooms.realestatemanager.view.viewmodel.Injection;
+import com.openclassrooms.realestatemanager.view.fragment.DetailFragment;
 import com.openclassrooms.realestatemanager.view.viewmodel.MainViewModel;
-import com.openclassrooms.realestatemanager.view.viewmodel.ViewModelFactory;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import static android.app.Activity.RESULT_OK;
+public class DialogEditProperty extends AlertDialog implements GeoLocation.GeoLocationService {
 
-public class AddFragment extends Fragment implements GeoLocation.GeoLocationService {
-
-    private static final String CHANNEL_ID = "NOTIFICATION_CHANNEL_PROPERTY";
+    private final Activity activity;
     //UI
     private LinearLayout layoutParent;
 
@@ -98,38 +71,39 @@ public class AddFragment extends Fragment implements GeoLocation.GeoLocationServ
     private ChipGroup chipGroupPointOfInterestProperty;
     private TextInputLayout inputPointOfInterestProperty;
 
-    private Button btnAddProperty;
+    private Button btnUpdateProperty;
     private RecyclerView recyclerViewPhotos;
 
     private AdapterRecyclerViewPhotosList adapter;
     // Dialog
     private TextInputLayout dialogInputDescription;
 
-    private MainViewModel mainViewModel;
+    //DATA
+    private final MainViewModel mainViewModel;
+    private final DetailFragment fragmentParent;
+    private final PropertyObj property;
+    private Address addressOfProperty;
 
-    private User currentUser;
+    private final static int INPUT_FILE_REQUEST_CODE = 101;
 
-    public static final int INPUT_FILE_REQUEST_CODE = 1;
-
-    private Address addressOfProperty = new Address();
+    public DialogEditProperty(Context context, Activity activity, PropertyObj property, DetailFragment fragment, MainViewModel mainViewModel) {
+        super(context);
+        this.activity = activity;
+        this.property = property;
+        this.fragmentParent = fragment;
+        this.mainViewModel = mainViewModel;
+    }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.add_fragment, container, false);
-        configureViewModel();
-        getUser();
-        configureUI(root);
-        return root;
+    protected void onCreate(Bundle savedInstanceState) {
+        View content = LayoutInflater.from(getContext()).inflate(R.layout.add_fragment, null);
+        setView(content);
+        configureDialogUI(content);
+        super.onCreate(savedInstanceState);
     }
 
-    private void getUser() {
-        mainViewModel.getUser().observe(getActivity(), this::updateCurrentUser);
-    }
-    private void updateCurrentUser(User user) {
-        currentUser = user;
-    }
-
-    private void configureUI(View root) {
+    private void configureDialogUI(View root) {
+        // INIT
         layoutParent = root.findViewById(R.id.add_fragment_linear_layout);
 
         btnAddPhotoProperty = root.findViewById(R.id.add_fragment_add_photo_button);
@@ -146,41 +120,70 @@ public class AddFragment extends Fragment implements GeoLocation.GeoLocationServ
         chipGroupPointOfInterestProperty = root.findViewById(R.id.add_fragment_point_of_interest_chip_group);
         inputPointOfInterestProperty = root.findViewById(R.id.add_fragment_point_of_interest_input);
 
+        btnUpdateProperty = root.findViewById(R.id.add_fragment_valid_button);
+        recyclerViewPhotos = root.findViewById(R.id.add_fragment_recycler_view_photos);
+
+        recyclerViewPhotos.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        adapter = new AdapterRecyclerViewPhotosList(true, mainViewModel);
+        recyclerViewPhotos.setAdapter(adapter);
+
+        updateUI();
+
+    }
+
+    private void updateUI() {
+        //DATA
+        for(Photo photo : property.getPhotos()){
+            mainViewModel.addPhotoOfTheProperty(photo);
+        }
+        addressOfProperty  = property.getAddress();
+
+        layoutParent.setPadding(8,12,8,8);
+        this.inputTypeProperty.getEditText().setText(property.getProperty().getType());
+        this.inputPrisProperty.getEditText().setText(String.valueOf(property.getProperty().getPris()));
+        this.inputNumberRoomProperty.getEditText().setText(String.valueOf(property.getProperty().getNbRoom()));
+        this.inputAreaProperty.getEditText().setText(String.valueOf(property.getProperty().getArea()));
+        this.inputDescriptionProperty.getEditText().setText(property.getProperty().getDescription());
+        this.buttonAddressProperty.setText(property.getAddress().toString());
+
+        this.buttonAddressProperty.setOnClickListener(v-> showDialogEditAddress());
+        this.btnUpdateProperty.setOnClickListener(v-> updateThisProperty());
+        this.btnUpdateProperty.setText("Update property");
+
+        adapter.updateData(mainViewModel.getPhotosOfTheProperty());
+
+        for(PointOfInterest point : property.getPointOfInterests()){
+            Chip chip = new Chip(getContext());
+            chip.setText(point.getName());
+            chip.setCloseIconVisible(true);
+            chip.setOnCloseIconClickListener(view -> {
+                chipGroupPointOfInterestProperty.removeView(chip);
+            });
+            chipGroupPointOfInterestProperty.addView(chip);
+        }
         inputPointOfInterestProperty.setEndIconOnClickListener(v-> {
             if(!inputPointOfInterestProperty.getEditText().getText().toString().equals("")) {
-                Chip chip = new Chip(getActivity());
+                Chip chip = new Chip(getContext());
                 chip.setText(inputPointOfInterestProperty.getEditText().getText().toString());
+                chip.setCloseIconVisible(true);
+                chip.setOnCloseIconClickListener(view -> {
+                    chipGroupPointOfInterestProperty.removeView(chip);
+                });
                 chipGroupPointOfInterestProperty.addView(chip);
                 inputPointOfInterestProperty.getEditText().setText("");
             }
         });
 
-        buttonAddressProperty.setOnClickListener(v -> showDialogEditAddress());
-
-        btnAddProperty = root.findViewById(R.id.add_fragment_valid_button);
-        recyclerViewPhotos = root.findViewById(R.id.add_fragment_recycler_view_photos);
-
-        recyclerViewPhotos.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-        adapter = new AdapterRecyclerViewPhotosList(true, mainViewModel);
-        recyclerViewPhotos.setAdapter(adapter);
-
         btnAddPhotoProperty.setOnClickListener(v -> {
             Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
             photoPickerIntent.setType("image/*");
             photoPickerIntent.putExtra(Intent.EXTRA_TITLE, "Select a picture");
-
-            startActivityForResult(photoPickerIntent, INPUT_FILE_REQUEST_CODE);
+            fragmentParent.startActivityForResult(photoPickerIntent, INPUT_FILE_REQUEST_CODE);
         });
-        btnAddProperty.setOnClickListener(v -> insertProperty());
     }
 
-    private void configureViewModel() {
-        ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(getActivity());
-        this.mainViewModel = new ViewModelProvider(this, viewModelFactory).get(MainViewModel.class);
-        mainViewModel.init();
-    }
+    private void updateThisProperty() {
 
-    private void insertProperty() {
         String type = inputTypeProperty.getEditText().getText().toString();
         float pris = Float.parseFloat(inputPrisProperty.getEditText().getText().toString());
         int nbRoom = Integer.parseInt(inputNumberRoomProperty.getEditText().getText().toString());
@@ -200,29 +203,21 @@ public class AddFragment extends Fragment implements GeoLocation.GeoLocationServ
                     && addressOfProperty.getPostalCode() != null
                     && addressOfProperty.getStreet() != null
                     && addressOfProperty.getNumberStreet() != null){
-                Property property = new Property(type, pris, nbRoom, area, description, "NOT_SELL", new Date(), null, currentUser.getId());
-                mainViewModel.insertProperty(property, addressOfProperty, mainViewModel.getPhotosOfTheProperty(), pointsOfInterest);
 
-                showToastWithText("The property are created !");
+                Property propertyUpdated = this.property.getProperty();
+                propertyUpdated.setType(type);
+                propertyUpdated.setPris(pris);
+                propertyUpdated.setNbRoom(nbRoom);
+                propertyUpdated.setArea(area);
+                propertyUpdated.setDescription(description);
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    CharSequence nameChannel = "notification_chanel";
-                    int importance = NotificationManager.IMPORTANCE_DEFAULT;
-                    NotificationChannel channel = new NotificationChannel(CHANNEL_ID, nameChannel, importance);
-                    channel.setDescription(description);
+                mainViewModel.updateProperty(propertyUpdated, addressOfProperty, mainViewModel.getPhotosOfTheProperty(), pointsOfInterest);
 
-                    NotificationCompat.Builder builder = new NotificationCompat.Builder(getContext(), CHANNEL_ID)
-                            .setSmallIcon(R.drawable.ic_baseline_home_24)
-                            .setContentTitle("The " + property.getType() + " have been created in the database !")
-                            .setContentText(addressOfProperty.toString() + "\n" + property.getDescription() + "\n" + property.getPris() + "$")
-                            .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-                    NotificationManager notificationManager = getActivity().getSystemService(NotificationManager.class);
-                    notificationManager.createNotificationChannel(channel);
-                    notificationManager.notify(111, builder.build());
-                }
+                showToastWithText("The property have updated !");
 
-                MainActivity activity = (MainActivity) getActivity();
-                if(activity != null) activity.switchFragment(0);
+                Intent intent = activity.getIntent();
+                activity.finish();
+                activity.startActivity(intent);
             }else{
                 showToastWithText("Complete the address of the property");
             }
@@ -232,7 +227,7 @@ public class AddFragment extends Fragment implements GeoLocation.GeoLocationServ
     }
 
     private void showDialogEditAddress() {
-        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
         alertDialogBuilder.setTitle("Enter the address");
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View v = inflater.inflate(R.layout.dialog_select_address, null);
@@ -248,7 +243,7 @@ public class AddFragment extends Fragment implements GeoLocation.GeoLocationServ
                 String address = addressNumberStreet + " " + addressStreet + ", " + addressPostalCode + ", " + addressCity + ", " + addressCountry;
                 addressOfProperty = new Address(addressCountry, addressCity, addressPostalCode, addressStreet, addressNumberStreet, 0, 0, 0);
 
-                GeoLocation.getLocationOfAddress(address, getActivity(), progressBar, layoutParent, this);
+                GeoLocation.getLocationOfAddress(address, activity, progressBar, layoutParent, this);
             }else{
                 showToastWithText("Enter a competed address");
             }
@@ -265,55 +260,19 @@ public class AddFragment extends Fragment implements GeoLocation.GeoLocationServ
         inputAddressStreetProperty = dialog.findViewById(R.id.add_fragment_address_street_edit);
         inputAddressNumberStreetProperty = dialog.findViewById(R.id.add_fragment_address_number_street_edit);
 
-
+        inputAddressCountryProperty.getEditText().setText(property.getAddress().getCountry());
+        inputAddressCityProperty.getEditText().setText(property.getAddress().getCity());
+        inputAddressPostalCodeProperty.getEditText().setText(property.getAddress().getPostalCode());
+        inputAddressStreetProperty.getEditText().setText(property.getAddress().getStreet());
+        inputAddressNumberStreetProperty.getEditText().setText(String.valueOf(property.getAddress().getNumberStreet()));
     }
-    private void showDialogEditPicture(Bitmap bitmap) {
-        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
-        alertDialogBuilder.setTitle("Define the description");
-        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View v = inflater.inflate(R.layout.dialog_edit_picture, null);
-        alertDialogBuilder.setView(v);
-        alertDialogBuilder.setPositiveButton("Add", ((dialogInterface, i) -> {
-            if (dialogInputDescription.getEditText() != null) {
-                String description = dialogInputDescription.getEditText().getText().toString();
-                Photo photo = new Photo(bitmap, description, 0);
-                mainViewModel.addPhotoOfTheProperty(photo);
-                adapter.updateData(mainViewModel.getPhotosOfTheProperty());
-            }else{
-                Log.e("AddFragment", "Error View");
-            }
-        }));
-        alertDialogBuilder.setNegativeButton("Cancel", null);
 
-        AlertDialog dialog = alertDialogBuilder.create();
-        dialog.show();
-
-        ImageView imgVPicture = dialog.findViewById(R.id.dialog_edit_picture);
-        imgVPicture.setImageBitmap(bitmap);
-        dialogInputDescription = dialog.findViewById(R.id.dialog_edit_picture_description_input);
-
-
+    public void addPhotoInAdapter (Photo photo){
+        this.adapter.addAPhoto(photo);
     }
+
     private void showToastWithText(String msg){
-        Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (resultCode == RESULT_OK) {
-            try {
-                final Uri imageUri = data.getData();
-                final InputStream imageStream = getActivity().getContentResolver().openInputStream(imageUri);
-                final Bitmap bitmap = BitmapFactory.decodeStream(imageStream);
-                Bitmap bitmapCompressed = Utils.compressImage(bitmap);
-                showDialogEditPicture(bitmapCompressed);
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -322,6 +281,7 @@ public class AddFragment extends Fragment implements GeoLocation.GeoLocationServ
         addressOfProperty.setLongLocation(longitude);
         buttonAddressProperty.setText(address);
     }
+
     @Override
     public void onFailureGetLocation() {
         showToastWithText("Enter a verified address");
