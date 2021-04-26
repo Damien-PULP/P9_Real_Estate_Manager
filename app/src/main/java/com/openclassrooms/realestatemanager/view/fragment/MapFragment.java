@@ -26,11 +26,13 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.model.PropertyObj;
 import com.openclassrooms.realestatemanager.model.User;
 import com.openclassrooms.realestatemanager.view.activity.MainActivity;
+import com.openclassrooms.realestatemanager.view.marker.InfoMarkerView;
 import com.openclassrooms.realestatemanager.view.viewmodel.Injection;
 import com.openclassrooms.realestatemanager.view.viewmodel.MainViewModel;
 import com.openclassrooms.realestatemanager.view.viewmodel.ViewModelFactory;
@@ -39,7 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class MapFragment extends Fragment implements OnMapReadyCallback {
+public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
 
     private List<PropertyObj> propertyObjs = new ArrayList<>();
 
@@ -59,9 +61,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         return root;
     }
 
+    // TODO Error when change rotation
     private void getUser() {
         mainViewModel.getUser().observe(getActivity(), this::getProperty);
     }
+
     private void getCurrentLocation() {
         //GET LOCATION
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
@@ -87,7 +91,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void getProperty(User user) {
-       if(user != null)mainViewModel.getProperty(user.getId()).observe(getActivity(), this::updateProperty);
+        if (user != null)
+            mainViewModel.getProperty(user.getId()).observe(getActivity(), this::updateProperty);
     }
 
     private void updateProperty(List<PropertyObj> propertyObjs) {
@@ -112,14 +117,39 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
-        for(PropertyObj propertyObj : propertyObjs){
+        for (PropertyObj propertyObj : propertyObjs) {
             LatLng locationProperty = new LatLng(propertyObj.getAddress().getLatLocation(), propertyObj.getAddress().getLongLocation());
-            googleMap.addMarker(new MarkerOptions().position(locationProperty).title(propertyObj.getProperty().getType() + " \n" + "$" + propertyObj.getProperty().getPris()));
+            MarkerOptions markerOptions = new MarkerOptions().position(locationProperty).title(String.valueOf(propertyObj.getProperty().getId()));
+            //marker.
+            Marker marker = googleMap.addMarker(markerOptions);
+            InfoMarkerView adapterMarker = new InfoMarkerView(getActivity(), propertyObjs);
+            googleMap.setInfoWindowAdapter(adapterMarker);
+            googleMap.setOnInfoWindowClickListener(this);
         }
         LatLng locationUser = new LatLng(userLatitude, userLongitude);
         googleMap.addMarker(new MarkerOptions().position(locationUser).title("User").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(locationUser, 10));
 
+        if (ActivityCompat.checkSelfPermission(Objects.requireNonNull(getContext()), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        googleMap.setMyLocationEnabled(true);
+        googleMap.getUiSettings().setMyLocationButtonEnabled(true);
+
+    }
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        mainViewModel.setCurrentIndexPropertyDetail(Long.parseLong(marker.getTitle()));
+        if(getActivity() != null) ((MainActivity) getActivity()).switchFragment(1);
+        /*Toast.makeText(getActivity(), "Info window clicked",
+                Toast.LENGTH_SHORT).show();*/
     }
 
     @Override
@@ -140,6 +170,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                         // for ActivityCompat#requestPermissions for more details.
                         return;
                     }
+
                     fusedLocationClient.getLastLocation().addOnSuccessListener(getActivity(), location -> {
                         if (location != null) {
                             userLatitude = location.getLatitude();

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2021. This code has been written by Damien De Lombaert
+  -->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_round_border"
+    android:padding="8dp"
+    android:gravity="center_horizontal">
+
+    <ImageView
+        android:id="@+id/marker_view_icon"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <TextView
+        android:gravity="center"
+        android:id="@+id/marker_view_type"
+        android:text="type"
+        style="@style/TextAppearance.MaterialComponents.Headline6"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:gravity="center"
+        android:id="@+id/marker_view_pris"
+        android:text="pris"
+        style="@style/TextAppearance.MaterialComponents.Headline6"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:gravity="center"
+        android:id="@+id/marker_view_location"
+        android:text="location"
+        style="@style/TextAppearance.MaterialComponents.Headline6"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:gravity="center"
+        android:id="@+id/marker_view_info_click"
+        android:textColor="@color/colorAccent"
+        android:text="click to view more details"
+        style="@style/TextAppearance.MaterialComponents.Body1"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"/>
+</LinearLayout>

@@ -165,8 +165,8 @@ public class AddFragment extends Fragment implements GeoLocation.GeoLocationServ
         recyclerViewPhotos.setAdapter(adapter);
 
         btnAddPhotoProperty.setOnClickListener(v -> {
-            Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-            photoPickerIntent.setType("image/*");
+            Intent photoPickerIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            //photoPickerIntent.setType("image/*");
             photoPickerIntent.putExtra(Intent.EXTRA_TITLE, "Select a picture");
 
             startActivityForResult(photoPickerIntent, INPUT_FILE_REQUEST_CODE);
@@ -298,6 +298,7 @@ public class AddFragment extends Fragment implements GeoLocation.GeoLocationServ
         Toast.makeText(getActivity(), msg, Toast.LENGTH_LONG).show();
     }
 
+    //TODO Error With picture from camera
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
