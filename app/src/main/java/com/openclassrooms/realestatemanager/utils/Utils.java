@@ -1,5 +1,6 @@
 package com.openclassrooms.realestatemanager.utils;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,6 +16,7 @@ import com.openclassrooms.realestatemanager.model.SearchPropertyModel;
 
 import java.io.ByteArrayOutputStream;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -85,6 +87,15 @@ public class Utils {
         return monthlyPris * years * 12;
     }
 
+    public static Date getDateFromString (String date){
+        DateFormat format = DateFormat.getInstance();
+        try {
+            return format.parse(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return new Date();
+    }
 
     public static Date subtractTimeToDate(Date date, int days, int month, int year) {
         GregorianCalendar cal = new GregorianCalendar();

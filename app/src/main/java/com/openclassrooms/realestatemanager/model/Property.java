@@ -1,5 +1,7 @@
 package com.openclassrooms.realestatemanager.model;
 
+import android.content.ContentValues;
+
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 /*
@@ -8,6 +10,9 @@ import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
+import com.openclassrooms.realestatemanager.utils.Utils;
+
+import java.lang.reflect.Field;
 import java.util.Date;
 
 @Entity (foreignKeys = {
@@ -106,4 +111,21 @@ public class Property {
     public void setIdAgent(long idAgent) {
         this.idAgent = idAgent;
     }
+
+    //CONTENT PROVIDER
+    public static Property fromContentValues(ContentValues values){
+        Property property = new Property();
+        if(values.containsKey("type")) property.setType(values.getAsString("type"));
+        if(values.containsKey("pris")) property.setPris(values.getAsFloat("pris"));
+        if(values.containsKey("nbRoom")) property.setNbRoom(values.getAsInteger("nbRoom"));
+        if(values.containsKey("area")) property.setArea(values.getAsInteger("area"));
+        if(values.containsKey("description")) property.setDescription(values.getAsString("description"));
+        if(values.containsKey("state")) property.setState(values.getAsString("state"));
+        if(values.containsKey("dateEnter")) property.setDateEnter(Utils.getDateFromString(values.getAsString("dateEnter")));
+        if(values.containsKey("dateSold")) property.setDateSold(Utils.getDateFromString(values.getAsString("dateSold")));
+        if(values.containsKey("idAgent")) property.setIdAgent(values.getAsLong("idAgent"));
+        return property;
+    }
+
+
 }

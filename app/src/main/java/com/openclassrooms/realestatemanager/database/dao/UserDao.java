@@ -4,6 +4,8 @@
 
 package com.openclassrooms.realestatemanager.database.dao;
 
+import android.database.Cursor;
+
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
@@ -21,10 +23,13 @@ import java.util.List;
 public interface UserDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void createUser(User user);
+    long createUser(User user);
 
     @Query("SELECT * FROM User WHERE firstName = :firstName AND secondName = :secondName AND password = :password")
     LiveData<User> getUser(String firstName, String secondName, String password);
+
+    @Query("SELECT * FROM User")
+    Cursor getCursorUser ();
 
     @Query("SELECT * FROM User")
     LiveData<User> getUserSimplify();

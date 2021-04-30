@@ -4,10 +4,12 @@
 
 package com.openclassrooms.realestatemanager.database.database;
 
+import android.content.ContentValues;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.room.Database;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
@@ -25,7 +27,7 @@ import com.openclassrooms.realestatemanager.model.Property;
 import com.openclassrooms.realestatemanager.model.User;
 import com.openclassrooms.realestatemanager.utils.Converters;
 
-@Database(entities = {User.class, Property.class, Address.class, Photo.class, PointOfInterest.class}, version = 6, exportSchema = false)
+@Database(entities = {User.class, Property.class, Address.class, Photo.class, PointOfInterest.class}, version = 9, exportSchema = false)
 @TypeConverters({Converters.class})
 public abstract class RealEstateManagerDatabase extends RoomDatabase {
 
@@ -43,7 +45,7 @@ public abstract class RealEstateManagerDatabase extends RoomDatabase {
             synchronized (RealEstateManagerDatabase.class){
                 if(INSTANCE == null){
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                            RealEstateManagerDatabase.class, "RealEstateManagerDatabase.db")
+                            RealEstateManagerDatabase.class, "RealEstateManagerDatabaseTest2.db")
                             .addCallback(prepopulateDatabase())
                             .fallbackToDestructiveMigration()
                             .allowMainThreadQueries()
@@ -61,14 +63,16 @@ public abstract class RealEstateManagerDatabase extends RoomDatabase {
                 super.onCreate(db);
 
                 /* TODO Suppress When account is here */
-                /*ContentValues contentValues = new ContentValues();
-                contentValues.put("id", "1");
-                contentValues.put("firstName", "firstName");
-                contentValues.put("email", "email");
+                ContentValues contentValues = new ContentValues();
+                contentValues.put("id", 1);
+                contentValues.put("firstName", "user-first-name");
+                contentValues.put("secondName", "user-second-name");
+                contentValues.put("email", "user-email");
+                contentValues.put("icon", "icon");
                 contentValues.put("phoneNumber", "000000000");
                 contentValues.put("password", "password");
 
-                db.insert("User", OnConflictStrategy.IGNORE, contentValues);*/
+                db.insert("User", OnConflictStrategy.IGNORE, contentValues);
             }
         };
     }

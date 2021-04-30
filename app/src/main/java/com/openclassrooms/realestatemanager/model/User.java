@@ -3,6 +3,8 @@
  */
 package com.openclassrooms.realestatemanager.model;
 
+import android.content.ContentValues;
+
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -105,6 +107,20 @@ public class User {
     @Override
     public int hashCode() {
         return Objects.hash(id, firstName, email, phoneNumber, password);
+    }
+
+    //CONTENT PROVIDER
+    public static User fromContentValues(ContentValues values){
+        User user = new User();
+        if(values.containsKey("id")) user.setId(values.getAsLong("id"));
+        if(values.containsKey("firstName")) user.setFirstName(values.getAsString("firstName"));
+        if(values.containsKey("secondName")) user.setSecondName(values.getAsString("secondName"));
+        if(values.containsKey("email")) user.setEmail(values.getAsString("email"));
+        if(values.containsKey("phoneNumber")) user.setPhoneNumber(values.getAsString("phoneNumber"));
+        if(values.containsKey("icon")) user.setIcon("icon");
+        if(values.containsKey("password")) user.setPassword(values.getAsString("password"));
+
+        return user;
     }
 
 }

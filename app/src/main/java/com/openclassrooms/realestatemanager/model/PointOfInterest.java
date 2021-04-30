@@ -4,9 +4,10 @@
 package com.openclassrooms.realestatemanager.model;
 
 import androidx.room.Entity;
+import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
-@Entity
+@Entity (foreignKeys = @ForeignKey(entity = Property.class, parentColumns = "id", childColumns = "idProperty"))
 public class PointOfInterest {
 
     @PrimaryKey (autoGenerate = true) public long id;

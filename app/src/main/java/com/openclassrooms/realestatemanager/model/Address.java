@@ -4,13 +4,15 @@
 
 package com.openclassrooms.realestatemanager.model;
 
+import android.content.ContentValues;
+
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
 import com.openclassrooms.realestatemanager.utils.Utils;
 
-@Entity (foreignKeys = @ForeignKey(entity = Address.class, parentColumns = "id", childColumns = "idProperty"))
+@Entity (foreignKeys = @ForeignKey(entity = Property.class, parentColumns = "id", childColumns = "idProperty"))
 public class Address {
 
     @PrimaryKey (autoGenerate = true) private long id;
@@ -98,5 +100,18 @@ public class Address {
     @Override
     public String toString() {
         return country + ", " + city + ", " + postalCode + ", " + street + " " + numberStreet;
+    }
+
+    public static Address fromContentValues (ContentValues values){
+        Address address = new Address();
+        if(values.containsKey("country")) address.setCountry(values.getAsString("country"));
+        if(values.containsKey("city")) address.setCity(values.getAsString("city"));
+        if(values.containsKey("postalCode")) address.setPostalCode(values.getAsString("postalCode"));
+        if(values.containsKey("street")) address.setStreet(values.getAsString("street"));
+        if(values.containsKey("numberStreet")) address.setNumberStreet(values.getAsInteger("numberStreet"));
+        if(values.containsKey("idProperty")) address.setIdProperty(values.getAsLong("idProperty"));
+        if(values.containsKey("latLocation")) address.setLatLocation(values.getAsLong("latLocation"));
+        if(values.containsKey("longLocation")) address.setLongLocation(values.getAsLong("longLocation"));
+        return address;
     }
 }

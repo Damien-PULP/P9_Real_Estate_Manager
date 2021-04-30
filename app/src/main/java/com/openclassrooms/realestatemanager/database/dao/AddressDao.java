@@ -4,6 +4,8 @@
 
 package com.openclassrooms.realestatemanager.database.dao;
 
+import android.database.Cursor;
+
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
@@ -21,6 +23,12 @@ public interface AddressDao {
 
     @Query("SELECT * FROM Address WHERE idProperty = :idProperty")
     LiveData<Address> getAddress(long idProperty);
+
+    @Query("SELECT * FROM Address WHERE idProperty = :idProperty")
+    Cursor getCursorOfAddress(long idProperty);
+
+    @Query("SELECT * FROM Address")
+    Cursor getCursorOfAllAddress();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insertAddress (Address address);

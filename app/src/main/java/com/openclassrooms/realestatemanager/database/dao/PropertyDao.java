@@ -4,9 +4,12 @@
 
 package com.openclassrooms.realestatemanager.database.dao;
 
+import android.database.Cursor;
+
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.RawQuery;
 import androidx.room.Update;
@@ -28,6 +31,13 @@ public interface PropertyDao {
     @Query("SELECT * FROM Property WHERE idAgent = :userId")
     LiveData<List<PropertyObj>> getPropertyWithAllAttribute (long userId);
 
+    //use for the content provider
+    @Query("SELECT * FROM Property WHERE idAgent = :userId")
+    Cursor getCursorProperty (long userId);
+
+    @Query("SELECT * FROM Property WHERE id = :id")
+    Cursor getCursorPropertyById (long id);
+
     @Query("SELECT * FROM Property WHERE idAgent = :userId")
     LiveData<List<Property>> getProperty(long userId);
 
@@ -35,7 +45,7 @@ public interface PropertyDao {
     LiveData<PropertyObj> getAPropertyObj(long idProperty);
 
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insertProperty (Property property);
 
     @Update
