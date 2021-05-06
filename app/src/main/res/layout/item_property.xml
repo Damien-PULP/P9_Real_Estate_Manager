@@ -1,45 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    android:id="@+id/item_property"
+<LinearLayout android:id="@+id/item_property"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/background_round_border"
-    android:backgroundTint="@color/colorPrimary"
-    android:layout_margin="8dp">
+    android:layout_marginVertical="8dp"
+    android:layout_marginHorizontal="16dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <ImageView
+
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/item_property_image"
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:scaleType="centerCrop"
-        android:background="@drawable/background_round_border_on_top"
-        android:backgroundTint="@color/colorPrimaryDark"/>
+        app:shapeAppearanceOverlay="@style/roundedImageViewTop"
+        app:srcCompat="@drawable/test_bitmap"
 
-    <TextView
-        android:id="@+id/item_property_type"
-        android:text="House"
-        style="@style/TextAppearance.MaterialComponents.Headline6"
-        android:layout_marginHorizontal="8dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:contentDescription="image property"
+        />
 
-    <TextView
-        android:id="@+id/item_property_location"
-        android:text="New-York"
-        style="@style/TextAppearance.MaterialComponents.Subtitle1"
-        android:layout_marginHorizontal="8dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:background="@drawable/background_border_rounded_filled"
+        android:padding="8dp">
 
-    <TextView
-        android:id="@+id/item_property_pris"
-        android:text="$1 700 000"
-        style="@style/TextAppearance.MaterialComponents.Headline6"
-        android:textColor="@color/colorAccent"
-        android:layout_marginHorizontal="8dp"
-        android:layout_marginBottom="8dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/item_property_type"
+            style="@style/TextAppearance.MaterialComponents.Headline6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:fontFamily="@font/raleway_thin"
+            android:text="House"
+            android:textColor="@color/colorOnSurfacePrimaryDark"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/item_property_location"
+            android:text="New-York"
+            android:textColor="@color/colorOnSurfacePrimaryDark"
+            style="@style/TextAppearance.MaterialComponents.Subtitle1"
+            android:layout_marginHorizontal="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/item_property_type"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <TextView
+            android:id="@+id/item_property_pris"
+            android:text="$1 700 000"
+            style="@style/TextAppearance.MaterialComponents.Headline6"
+            android:textColor="@color/colorAccent"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 </LinearLayout>

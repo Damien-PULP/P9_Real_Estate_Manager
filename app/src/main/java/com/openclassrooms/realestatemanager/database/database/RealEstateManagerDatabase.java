@@ -27,7 +27,7 @@ import com.openclassrooms.realestatemanager.model.Property;
 import com.openclassrooms.realestatemanager.model.User;
 import com.openclassrooms.realestatemanager.utils.Converters;
 
-@Database(entities = {User.class, Property.class, Address.class, Photo.class, PointOfInterest.class}, version = 9, exportSchema = false)
+@Database(entities = {User.class, Property.class, Address.class, Photo.class, PointOfInterest.class}, version = 10, exportSchema = false)
 @TypeConverters({Converters.class})
 public abstract class RealEstateManagerDatabase extends RoomDatabase {
 
@@ -45,7 +45,7 @@ public abstract class RealEstateManagerDatabase extends RoomDatabase {
             synchronized (RealEstateManagerDatabase.class){
                 if(INSTANCE == null){
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                            RealEstateManagerDatabase.class, "RealEstateManagerDatabaseTest2.db")
+                            RealEstateManagerDatabase.class, "RealEstateManagerDatabase.db")
                             .addCallback(prepopulateDatabase())
                             .fallbackToDestructiveMigration()
                             .allowMainThreadQueries()
@@ -55,7 +55,7 @@ public abstract class RealEstateManagerDatabase extends RoomDatabase {
         }
         return INSTANCE;
     }
-
+    //PREPOPULATE
     private static Callback prepopulateDatabase() {
         return new Callback() {
             @Override
@@ -76,4 +76,5 @@ public abstract class RealEstateManagerDatabase extends RoomDatabase {
             }
         };
     }
+
 }

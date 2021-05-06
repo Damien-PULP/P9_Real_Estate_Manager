@@ -2,7 +2,6 @@ package com.openclassrooms.realestatemanager.view.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,8 +22,6 @@ import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
-
-
     //Fragment
     private MainFragment mainFragment;
     private DetailFragment detailFragment;
@@ -32,54 +29,55 @@ public class MainActivity extends AppCompatActivity {
     private MapFragment mapFragment;
     //VIEW MODEL
     private MainViewModel mainViewModel;
-    //NAVIGATION
-    private BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        this.configureFragment();
         this.configureViewModel();
-        this.configureUI();
-        this.updateUIWithData();
-    }
-
-    private void updateUIWithData() {
-        /* TODO Suppress just for init */
-        mainViewModel.init();
-        mainViewModel.insertUser("User", "user", "user@email.com", "0448888888", "iconpath", "password");
-        mainViewModel.getUser().observe(this, this::successGetCurrentUser);
-    }
-
-    private void successGetCurrentUser(User user) {
-        //Log.d("MainActivity", "The user is " + user.getFirstName());
-
-    }
-
-    private void configureUI() {
-        bottomNavigationView = findViewById(R.id.main_activity_bottom_navigation);
-        bottomNavigationView.setOnNavigationItemSelectedListener(item -> updateNavigationFragment(item.getItemId()));
-    }
-    private Boolean updateNavigationFragment(Integer integer){
-        switch (integer) {
-            case R.id.add_page:
-                switchFragment(2);
-                break;
-            case R.id.home_page:
-                switchFragment(0);
-                break;
-            case R.id.map_page :
-                switchFragment(3);
-                break;
-        }
-        return true;
+        this.getUser();
     }
 
     private void configureViewModel() {
         ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(this);
         this.mainViewModel = new ViewModelProvider(this, viewModelFactory).get(MainViewModel.class);
+    }
+
+    private void getUser() {
+        mainViewModel.init();
+        mainViewModel.insertUser("User", "user", "user@email.com", "0448888888", "iconpath", "password");
+        assert mainViewModel.getUser() != null;
+        mainViewModel.getUser().observe(this, this::successGetCurrentUser);
+    }
+    private void successGetCurrentUser(User user) {
+        this.configureFragment();
+        this.configureUI();
+    }
+
+    private void configureUI() {
+        //NAVIGATION
+        BottomNavigationView bottomNavigationView = findViewById(R.id.main_activity_bottom_navigation);
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> updateNavigationFragment(item.getItemId()));
+    }
+    private Boolean updateNavigationFragment(Integer integer){
+        final int ADD_PAGE = R.id.add_page;
+        final int HOME_PAGE = R.id.home_page;
+        final int MAP_PAGE = R.id.map_page;
+        switch (integer) {
+            case ADD_PAGE:
+                switchFragment(2);
+                break;
+            case HOME_PAGE:
+                switchFragment(0);
+                break;
+            case MAP_PAGE :
+                switchFragment(3);
+                break;
+            default:
+                return false;
+        }
+        return true;
     }
 
     private void configureFragment() {

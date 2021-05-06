@@ -15,7 +15,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.model.Photo;
 import com.openclassrooms.realestatemanager.view.viewmodel.MainViewModel;
@@ -36,6 +35,7 @@ public class AdapterRecyclerViewPhotosList extends RecyclerView.Adapter<AdapterR
         this.mainViewModel = mainViewModel;
     }
 
+    @NonNull
     @Override
     public ViewHolderPhoto onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         context = parent.getContext();
@@ -46,30 +46,26 @@ public class AdapterRecyclerViewPhotosList extends RecyclerView.Adapter<AdapterR
         final float scale = context.getResources().getDisplayMetrics().density;
 
         if(isLittleView) {
-
             int pixelsLt = (int) (100 * scale + 0.5f);
             params.width = pixelsLt;
             params.height = pixelsLt;
-            view.setLayoutParams(params);
         }else{
-            int pixelsBg = (int) (350 * scale + 0.5f);
-            params.height = pixelsBg;
-            view.setLayoutParams(params);
+            params.height = (int) (350 * scale + 0.5f);
         }
+        view.setLayoutParams(params);
 
         return new AdapterRecyclerViewPhotosList.ViewHolderPhoto(view,  this);
     }
-
     @Override
     public void onBindViewHolder(@NonNull ViewHolderPhoto holder, int position) {
         holder.bind(photos.get(position), isLittleView, context);
     }
-
     @Override
     public int getItemCount() {
         return photos.size();
     }
 
+    //call to change data
     public void updateData (List<Photo> photos){
         this.photos = photos;
         notifyDataSetChanged();
@@ -84,10 +80,11 @@ public class AdapterRecyclerViewPhotosList extends RecyclerView.Adapter<AdapterR
         notifyDataSetChanged();
     }
 
+    //VIEW HOLDER of this adapter
     static class ViewHolderPhoto extends RecyclerView.ViewHolder {
 
-        private ImageView picture;
-        private TextView description;
+        private final ImageView picture;
+        private final TextView description;
         private final AdapterRecyclerViewPhotosList adapter;
 
         public ViewHolderPhoto(@NonNull View itemView, AdapterRecyclerViewPhotosList adapter) {
@@ -109,9 +106,7 @@ public class AdapterRecyclerViewPhotosList extends RecyclerView.Adapter<AdapterR
                 itemView.setOnLongClickListener(v -> {
                     final AlertDialog.Builder builder = new AlertDialog.Builder(context);
                     builder.setTitle("Are you sure of remove this picture ?");
-                    builder.setPositiveButton("Yes",(dialogInterface, i) -> {
-                        adapter.removeAPhoto(photo);
-                    });
+                    builder.setPositiveButton("Yes",(dialogInterface, i) -> adapter.removeAPhoto(photo));
                     builder.setNegativeButton("No", null);
                     AlertDialog dialog = builder.create();
                     dialog.show();

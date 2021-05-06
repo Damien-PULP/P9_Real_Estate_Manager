@@ -2,7 +2,7 @@
  * Copyright (c) 2021. This code has been written by Damien De Lombaert
  */
 
-package com.openclassrooms.realestatemanager.Utils;
+package com.openclassrooms.realestatemanager.utils;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;

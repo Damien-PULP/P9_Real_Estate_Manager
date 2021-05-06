@@ -12,7 +12,6 @@ import androidx.room.PrimaryKey;
 
 import com.openclassrooms.realestatemanager.utils.Utils;
 
-import java.lang.reflect.Field;
 import java.util.Date;
 
 @Entity (foreignKeys = {
@@ -20,19 +19,20 @@ import java.util.Date;
 public class Property {
 
     @PrimaryKey(autoGenerate = true) private long id;
-    @NonNull private String type;
-    @NonNull private float pris;
-    @NonNull private int nbRoom;
-    @NonNull private int area;
-    @NonNull private String description;
-    @NonNull private String state;
-    @NonNull private Date dateEnter;
+    private String type;
+    private float pris;
+    private int nbRoom;
+    private int area;
+    private String description;
+    private String state;
+    private Date dateEnter;
     private Date dateSold;
     private long idAgent;
 
+    //Need empty constructor
     public Property() {
     }
-    public Property(@NonNull String type, float pris, int nbRoom, @NonNull int area, @NonNull String description, @NonNull String state, @NonNull Date dateEnter, Date dateSold, long idAgent) {
+    public Property(@NonNull String type, float pris, int nbRoom, int area, @NonNull String description, @NonNull String state, @NonNull Date dateEnter, Date dateSold, long idAgent) {
         this.type = type;
         this.pris = pris;
         this.nbRoom = nbRoom;

@@ -6,45 +6,20 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-    </style>
-
-    <style name="AppTheme.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
+        <item name="fontFamily">@font/roboto</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
-    <style name="TextAppearance.MaterialComponents.Button.Text" parent="TextAppearance.MaterialComponents.Button">
-        <item name="android:textColor">@color/colorBlank</item>
-        <item name="android:background">@color/colorTrans</item>
+    <style name="roundedImageView" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">12dp</item>
     </style>
-    <style name="TextAppearance.MaterialComponents.Button.colored" parent="TextAppearance.MaterialComponents.Button">
-        <item name="android:textColor">@color/colorBlank</item>
-        <item name="android:background">@color/colorPrimary</item>
-        <item name="boxCornerRadiusBottomEnd">20dp</item>
-        <item name="boxCornerRadiusBottomStart">20dp</item>
-        <item name="boxCornerRadiusTopEnd">20dp</item>
-        <item name="boxCornerRadiusTopStart">20dp</item>
-        <item name="boxStrokeWidth">1dp</item>
-    </style>
-    <style name="TextAppearance.MaterialComponents.Body1.background">
-        <item name="android:textColor">@color/colorBlank</item>
-        <item name="boxCornerRadiusBottomEnd">20dp</item>
-        <item name="boxCornerRadiusBottomStart">20dp</item>
-        <item name="boxCornerRadiusTopEnd">20dp</item>
-        <item name="boxCornerRadiusTopStart">20dp</item>
-        <item name="boxBackgroundColor">@color/colorPrimaryDark</item>
-        <item name="boxBackgroundMode">filled</item>
-    </style>
-
-    <style name="Base.Widget.MaterialComponents.TextInputLayout.EditText" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-        <item name="boxCornerRadiusBottomEnd">20dp</item>
-        <item name="boxCornerRadiusBottomStart">20dp</item>
-        <item name="boxCornerRadiusTopEnd">20dp</item>
-        <item name="boxCornerRadiusTopStart">20dp</item>
-        <item name="boxStrokeWidth">1dp</item>
+    <style name="roundedImageViewTop" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">12dp</item>
+        <item name="cornerSizeTopRight">12dp</item>
     </style>
 </resources>

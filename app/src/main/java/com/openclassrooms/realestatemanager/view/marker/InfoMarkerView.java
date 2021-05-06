@@ -17,6 +17,9 @@ import com.openclassrooms.realestatemanager.model.PropertyObj;
 
 import java.util.List;
 
+/**
+ * Custom the marker with data
+ */
 public class InfoMarkerView implements GoogleMap.InfoWindowAdapter {
 
     private final List<PropertyObj> properties;
@@ -47,11 +50,9 @@ public class InfoMarkerView implements GoogleMap.InfoWindowAdapter {
         }
         return view;
     }
-
     @Override
     public View getInfoContents(Marker marker) {
-        View view = LayoutInflater.from(context).inflate(R.layout.marker_view_property, null);
-        return view;
+        return LayoutInflater.from(context).inflate(R.layout.marker_view_property, null);
     }
 
     private PropertyObj getPropertyById (String id){

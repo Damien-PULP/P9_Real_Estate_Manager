@@ -15,7 +15,8 @@
     <ImageView
         android:id="@+id/marker_view_icon"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:contentDescription="TODO" />
     <TextView
         android:gravity="center"
         android:id="@+id/marker_view_type"
@@ -42,7 +43,6 @@
 
     <TextView
         android:gravity="center"
-        android:id="@+id/marker_view_info_click"
         android:textColor="@color/colorAccent"
         android:text="click to view more details"
         style="@style/TextAppearance.MaterialComponents.Body1"

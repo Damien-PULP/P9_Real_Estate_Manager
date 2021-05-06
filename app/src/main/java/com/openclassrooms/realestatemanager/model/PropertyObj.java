@@ -31,6 +31,7 @@ public class PropertyObj {
     )
     public List<PointOfInterest> pointOfInterests;
 
+    //GETTER
     public Property getProperty() {
         return property;
     }

@@ -5,7 +5,6 @@
 package com.openclassrooms.realestatemanager.database.repository;
 
 import androidx.lifecycle.LiveData;
-import androidx.sqlite.db.SimpleSQLiteQuery;
 
 import com.openclassrooms.realestatemanager.database.dao.AddressDao;
 import com.openclassrooms.realestatemanager.database.dao.PhotoDao;
@@ -23,6 +22,7 @@ import java.util.List;
 
 public class PropertyDataRepository {
 
+    //DAO
     private final PropertyDao propertyDao;
     private final AddressDao addressDao;
     private final PhotoDao photoDao;
@@ -53,10 +53,6 @@ public class PropertyDataRepository {
     public LiveData<Photo> getAPhoto (long idPhoto){ return this.photoDao.getAPhoto(idPhoto); }
     public LiveData<List<PointOfInterest>> getPointOfInterests (long idProperty) { return this.pointOfInterestDao.getPointsOfInterest(idProperty); }
     public LiveData<List<PropertyObj>> getPropertyWithAttributes (long idUser) { return this.propertyDao.getPropertyWithAllAttribute(idUser); }
-    /*LiveData<List<PropertyAttribute>> getPropertiesWithAttributes (Property property, User user){
-        return new PropertyAttribute(property, getPointOfInterests(property.getId()), getPhotos(property.getId()), getAddress(property.getId()), user)
-    }*/
-
     // CREATE
     public long createProperty (Property property){
         return this.propertyDao.insertProperty(property);

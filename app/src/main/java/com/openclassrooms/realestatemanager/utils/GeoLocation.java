@@ -7,9 +7,6 @@ package com.openclassrooms.realestatemanager.utils;
 import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -21,10 +18,12 @@ import java.util.Locale;
 
 public class GeoLocation {
 
+    //CALLBACK OF LOCATION SERVICE
     public interface GeoLocationService {
         void onSuccessGetLocation (double latitude, double longitude, String address);
         void onFailureGetLocation ();
     }
+    // GET LATITUDE AND LONGITUDE OF A ADDRESS
     public static void getLocationOfAddress (String locationAddress, Context context, ProgressBar progressBar, View viewParent, GeoLocationService callback){
         Thread thread = new Thread(){
             @Override

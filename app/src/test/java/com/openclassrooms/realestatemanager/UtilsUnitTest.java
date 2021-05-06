@@ -4,7 +4,6 @@
 
 package com.openclassrooms.realestatemanager;
 
-import com.bumptech.glide.util.Util;
 import com.openclassrooms.realestatemanager.utils.Utils;
 
 import org.junit.Test;
@@ -39,6 +38,7 @@ public class UtilsUnitTest {
         String today = Utils.getTodayDate();
         Date dateToday = new SimpleDateFormat("dd/MM/yyyy").parse(today);
         Calendar cal = Calendar.getInstance();
+        assert dateToday != null;
         cal.setTime(dateToday);
         assertTrue(cal.get(Calendar.DAY_OF_MONTH) == Calendar.getInstance().get(Calendar.DAY_OF_MONTH) && cal.get(Calendar.MONTH) == Calendar.getInstance().get(Calendar.MONTH)  && cal.get(Calendar.YEAR) == Calendar.getInstance().get(Calendar.YEAR));
     }

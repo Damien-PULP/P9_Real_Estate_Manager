@@ -58,7 +58,6 @@ public class SearchPropertyModel {
     public String getCityProperty() {
         return cityProperty;
     }
-
     //SETTER
     public void setSoldProperty(boolean soldProperty) {
         isSoldProperty = soldProperty;
@@ -87,4 +86,5 @@ public class SearchPropertyModel {
     public void setCityProperty(String cityProperty) {
         this.cityProperty = cityProperty;
     }
+
 }

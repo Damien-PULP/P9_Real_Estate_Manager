@@ -6,14 +6,15 @@ package com.openclassrooms.realestatemanager.utils;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.text.TextUtils;
-import android.util.Base64;
 
 import androidx.room.TypeConverter;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Date;
 
+/**
+ * Converter type for ROOM
+ */
 public class Converters {
 
     @TypeConverter
@@ -28,8 +29,7 @@ public class Converters {
 
     @TypeConverter
     public static Bitmap toBitmap(byte[] byteArray){
-        Bitmap bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-        return bitmap;
+        return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
     }
 
     @TypeConverter

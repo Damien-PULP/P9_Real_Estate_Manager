@@ -9,21 +9,19 @@ import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-import com.openclassrooms.realestatemanager.utils.Utils;
-
 import java.util.Objects;
 
 @Entity
 public class User {
 
     @PrimaryKey
-    @NonNull private long id;
-    @NonNull private String firstName;
-    @NonNull private String secondName;
-    @NonNull private String email;
-    @NonNull  private String phoneNumber;
+    private long id;
+    private String firstName;
+    private String secondName;
+    private String email;
+    private String phoneNumber;
     private String icon;
-    @NonNull private String password;
+    private String password;
 
     //Need empty constructor
     public User() {
@@ -39,7 +37,6 @@ public class User {
     }
 
     //GETTER
-    @NonNull
     public long getId() {
         return id;
     }
@@ -68,7 +65,7 @@ public class User {
     }
 
     //SETTER
-    public void setId(@NonNull long id) {
+    public void setId(long id) {
         this.id = id;
     }
     public void setFirstName(@NonNull String firstName) {

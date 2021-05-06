@@ -7,20 +7,19 @@ package com.openclassrooms.realestatemanager.utils;
 import android.view.View;
 import android.widget.ProgressBar;
 
-import androidx.sqlite.db.SimpleSQLiteQuery;
-
 import com.openclassrooms.realestatemanager.model.PointOfInterest;
 import com.openclassrooms.realestatemanager.model.PropertyObj;
 import com.openclassrooms.realestatemanager.model.SearchPropertyModel;
 import com.openclassrooms.realestatemanager.view.activity.MainActivity;
 import com.openclassrooms.realestatemanager.view.viewmodel.MainViewModel;
 
-import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Complex search properties by filter
+ */
 public class SearchPropertyManager {
 
     private final MainActivity activity;
@@ -33,6 +32,7 @@ public class SearchPropertyManager {
     private List<PropertyObj> listPropertyByFirstStep = new ArrayList<>();
     private List<PointOfInterest> listPointOfInterestSecondStep = new ArrayList<>();
 
+    //CALLBACK OF THE SEARCH MANAGER
     public interface SearchPropertyManagerCallback {
         void onResearchIsCompleted(List<PropertyObj> propertyByFilter);
     }
@@ -45,21 +45,23 @@ public class SearchPropertyManager {
         this.progressBar = progressBar;
     }
 
+    //CALL THE SEARCH WITH A FILTER
     public void searchPropertiesByFilter() {
         progressBar.setVisibility(View.VISIBLE);
         this.mainViewModel.searchAPropertyWithFilter(searchPropertyModel).observe(activity, this::firstStepByGeneralField);
     }
 
+    //FIRST STEP OF THE FILTER
     private void firstStepByGeneralField(List<PropertyObj> properties) {
         this.listPropertyByFirstStep = properties;
         this.mainViewModel.searchPointOfInterestByName(searchPropertyModel).observe(activity, this::secondStepByPointOfInterestFilter);
     }
-
+    //SECOND STEP OF THE FILTER
     private void secondStepByPointOfInterestFilter(List<PointOfInterest> pointOfInterests) {
         this.listPointOfInterestSecondStep = pointOfInterests;
         this.callback.onResearchIsCompleted(getPropertyByMultipleFilter());
     }
-
+    //FINALLY SORT
     private List<PropertyObj> getPropertyByMultipleFilter() {
         List<PropertyObj> propertiesSearched = new ArrayList<>();
 
@@ -108,47 +110,6 @@ public class SearchPropertyManager {
             }
         }
 
-        /*for (PropertyObj property : listPropertyByFirstStep) {
-            Date dateMax;
-            if (!searchPropertyModel.getLastSellDateProperty().equals("none")) {
-                if (searchPropertyModel.getLastSellDateProperty().equals("byDay")) {
-                    dateMax = Utils.subtractTimeToDate(new Date(), 7, 0, 0);
-                } else if (searchPropertyModel.getLastSellDateProperty().equals("byMonth")) {
-                    dateMax = Utils.subtractTimeToDate(new Date(), 0, 1, 0);
-                } else {
-                    dateMax = Utils.subtractTimeToDate(new Date(), 0, 0, 1);
-                }
-                if (property.getProperty().getDateEnter().getTime() >= dateMax.getTime()) {
-                    forBreak:
-                    for (PointOfInterest point : property.getPointOfInterests()) {
-                        if (listPointOfInterestSecondStep.size() > 0) {
-                            for (PointOfInterest pointSearched : listPointOfInterestSecondStep) {
-                                if (point.getName().toLowerCase().equals(pointSearched.getName().toLowerCase())) {
-                                    propertiesSearched.add(property);
-                                    break forBreak;
-                                }
-                            }
-                        } else {
-                            propertiesSearched.add(property);
-                        }
-                    }
-                }
-            } else {
-                forBreak:
-                for (PointOfInterest point : property.getPointOfInterests()) {
-                    if (listPointOfInterestSecondStep.size() > 0) {
-                        for (PointOfInterest pointSearched : listPointOfInterestSecondStep) {
-                            if (point.getName().toLowerCase().equals(pointSearched.getName().toLowerCase())) {
-                                propertiesSearched.add(property);
-                                break forBreak;
-                            }
-                        }
-                    } else {
-                        propertiesSearched.add(property);
-                    }
-                }
-            }
-        }*/
         progressBar.setVisibility(View.GONE);
         return propertiesSearched;
     }

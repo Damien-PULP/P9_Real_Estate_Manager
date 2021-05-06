@@ -1,0 +1,21 @@
+<!--
+  ~ Copyright (c) 2021. This code has been written by Damien De Lombaert
+  -->
+
+<vector android:height="24.029036dp" android:viewportHeight="1274.42"
+    android:viewportWidth="1272.88" android:width="24dp"
+    xmlns:aapt="http://schemas.android.com/aapt" xmlns:android="http://schemas.android.com/apk/res/android">
+    <path android:pathData="M1258.31,1274.42L969.62,1274.42a14.57,14.57 0,0 1,-14.57 -14.57L955.05,681.08l-310,196.06a14.57,14.57 0,0 1,-17.25 0l-310,-196.06L317.8,1259.89a14.57,14.57 0,0 1,-14.58 14.57L14.58,1274.46A14.57,14.57 0,0 1,0 1259.89L0,426.07a14.6,14.6 0,0 1,6.21 -11.94L628.12,2.64a14.57,14.57 0,0 1,16.73 0l621.86,411.49a14.57,14.57 0,0 1,6.21 11.94L1272.92,1259.89A14.57,14.57 0,0 1,1258.31 1274.42ZM636.44,32.42L29.12,433.65v811.62h259.53v-593a14.58,14.58 0,0 1,23.21 -11.75l324.55,206.76Z">
+        <aapt:attr name="android:fillColor">
+            <gradient android:endX="1191.52" android:endY="1258.87"
+                android:startX="-212.48001" android:startY="206.87001" android:type="linear">
+                <item android:color="#FFF5E6BD" android:offset="0.1"/>
+                <item android:color="#FFF3E2B5" android:offset="0.19"/>
+                <item android:color="#FFEED89E" android:offset="0.35"/>
+                <item android:color="#FFE6C778" android:offset="0.54"/>
+                <item android:color="#FFDAB044" android:offset="0.77"/>
+                <item android:color="#FFCD9507" android:offset="1"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+</vector>

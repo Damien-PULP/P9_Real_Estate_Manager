@@ -23,6 +23,7 @@ import com.openclassrooms.realestatemanager.model.SearchPropertyModel;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class DialogSearchView extends AlertDialog {
 
@@ -48,9 +49,11 @@ public class DialogSearchView extends AlertDialog {
     private final WeakReference<CallbackSearchDialog> callbackRef;
     private final Context context;
 
+    //CALLBACK of Search property with filter
     public interface CallbackSearchDialog {
         void OnSearchProperty(SearchPropertyModel searchPropertyModel);
     }
+
     public DialogSearchView(Context context, CallbackSearchDialog callback, List<PointOfInterest> pointOfInterests) {
         super(context);
         this.context = context;
@@ -68,31 +71,7 @@ public class DialogSearchView extends AlertDialog {
         super.onCreate(savedInstanceState);
     }
 
-    private void searchProperty() {
-        String typeProperty = type.getEditText().getText().toString();
-        int minSurfaceProperty = 0;
-        int maxSurfaceProperty = 0;
-        if(!minSurface.getEditText().getText().toString().equals("")) minSurfaceProperty = Integer.parseInt(minSurface.getEditText().getText().toString());
-        if(!maxSurface.getEditText().getText().toString().equals("")) maxSurfaceProperty = Integer.parseInt(maxSurface.getEditText().getText().toString());
-        int minPrisProperty = 0;
-        int maxPrisProperty = 0;
-        if(!minPris.getEditText().getText().toString().equals("")) minPrisProperty = Integer.parseInt(minPris.getEditText().getText().toString());
-        if(!maxPris.getEditText().getText().toString().equals("")) maxPrisProperty = Integer.parseInt(maxPris.getEditText().getText().toString());
-
-        //String lastSellDateProperty = lastSaleDateDay.getEditText().getText().toString() + "/" + lastSaleDateMonth.getEditText().getText().toString() + "/" + lastSaleDateYear.getEditText().getText().toString();
-        String cityProperty = city.getEditText().getText().toString();
-
-        List<String> pointsOfInterestList = new ArrayList<>();
-        for(int i= 0 ; i < pointOfInterest.getChildCount(); i++){
-            Chip chip = (Chip) pointOfInterest.getChildAt(i);
-            if(chip.isChecked()){
-                pointsOfInterestList.add(chip.getText().toString());
-            }
-        }
-
-        callbackRef.get().OnSearchProperty(new SearchPropertyModel(isSoldBool,typeProperty, minSurfaceProperty, maxSurfaceProperty, minPrisProperty, maxPrisProperty, pointsOfInterestList, dateFilter, cityProperty));
-    }
-
+    //configure UI
     private void onConfigureDialog(View view) {
         this.isNotSold = view.findViewById(R.id.dialog_search_view_not_sold);
         this.isSold = view.findViewById(R.id.dialog_search_view_sold);
@@ -125,9 +104,7 @@ public class DialogSearchView extends AlertDialog {
         for(PointOfInterest point : pointOfInterestObj){
             Chip chip = new Chip(context);
             chip.setText(point.getName());
-            chip.setOnClickListener(view1 -> {
-                chip.setBackgroundColor(context.getResources().getColor(R.color.colorAccent));
-            });
+            chip.setOnClickListener(view1 -> chip.setBackgroundColor(context.getResources().getColor(R.color.colorAccent)));
             chip.setCheckable(true);
             pointOfInterest.addView(chip);
         }
@@ -151,5 +128,30 @@ public class DialogSearchView extends AlertDialog {
             lastSaleDateDay.setBackgroundColor(context.getResources().getColor(R.color.colorPrimary));
         });
     }
+    //Get data of the input and start the searching
+    private void searchProperty() {
+        String typeProperty = Objects.requireNonNull(type.getEditText()).getText().toString();
+        int minSurfaceProperty = 0;
+        int maxSurfaceProperty = 0;
+        if(!Objects.requireNonNull(minSurface.getEditText()).getText().toString().equals("")) minSurfaceProperty = Integer.parseInt(minSurface.getEditText().getText().toString());
+        if(!Objects.requireNonNull(maxSurface.getEditText()).getText().toString().equals("")) maxSurfaceProperty = Integer.parseInt(maxSurface.getEditText().getText().toString());
+        int minPrisProperty = 0;
+        int maxPrisProperty = 0;
+        if(!Objects.requireNonNull(minPris.getEditText()).getText().toString().equals("")) minPrisProperty = Integer.parseInt(minPris.getEditText().getText().toString());
+        if(!Objects.requireNonNull(maxPris.getEditText()).getText().toString().equals("")) maxPrisProperty = Integer.parseInt(maxPris.getEditText().getText().toString());
+
+        String cityProperty = Objects.requireNonNull(city.getEditText()).getText().toString();
+
+        List<String> pointsOfInterestList = new ArrayList<>();
+        for(int i= 0 ; i < pointOfInterest.getChildCount(); i++){
+            Chip chip = (Chip) pointOfInterest.getChildAt(i);
+            if(chip.isChecked()){
+                pointsOfInterestList.add(chip.getText().toString());
+            }
+        }
+
+        callbackRef.get().OnSearchProperty(new SearchPropertyModel(isSoldBool,typeProperty, minSurfaceProperty, maxSurfaceProperty, minPrisProperty, maxPrisProperty, pointsOfInterestList, dateFilter, cityProperty));
+    }
+
 
 }

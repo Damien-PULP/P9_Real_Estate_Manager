@@ -11,6 +11,7 @@ import com.openclassrooms.realestatemanager.model.User;
 
 public class UserDataRepository {
 
+    //DAO
     private final UserDao userDao;
 
     public UserDataRepository(UserDao userDao) {
@@ -37,4 +38,5 @@ public class UserDataRepository {
     public void deleteUser (String firstName, String secondName, String password){
         this.userDao.deleteUser(firstName,secondName,password);
     }
+
 }

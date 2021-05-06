@@ -1,46 +1,36 @@
 package com.openclassrooms.realestatemanager.view.fragment;
 
-import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.view.menu.ActionMenuItemView;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.textfield.TextInputLayout;
@@ -59,7 +49,6 @@ import com.openclassrooms.realestatemanager.view.viewmodel.ViewModelFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -78,20 +67,21 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
     private RecyclerView recyclerViewPhotosProperty;
     private ChipGroup chipGroupPointsOfInterestProperty;
     private Button btnCalculatorMortgage;
+    //DIALOG
+    private TextInputLayout dialogInputDescription;
+    private DialogEditProperty dialogEditProperty;
+    //MENU
+    private ActionMenuItemView itemSellMenu;
+    private ActionMenuItemView itemEditMenu;
 
     private AdapterRecyclerViewPhotosList adapter;
 
     private GoogleMap map;
-
-    private MainViewModel mainViewModel;
-    private LiveData<PropertyObj> currentProperty;
-
+    //DATA
     private double PropertyLocationLatitude;
     private double PropertyLocationLongitude;
-    private ActionMenuItemView itemSellMenu;
-    private ActionMenuItemView itemEditMenu;
-    private TextInputLayout dialogInputDescription;
-    private DialogEditProperty dialogEditProperty;
+    private MainViewModel mainViewModel;
+    private LiveData<PropertyObj> currentProperty;
 
 
     @Override
@@ -104,15 +94,38 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
         return root;
     }
 
-    private void getData() {
-        Long idProperty = mainViewModel.getCurrentIndexPropertyDetail();
-
-        if (idProperty != null) {
-            currentProperty = mainViewModel.getAPropertyObj(idProperty);
-            currentProperty.observe(getActivity(), this::updateUIWithData);
-        }
+    private void configureViewModel() {
+        ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(getActivity());
+        this.mainViewModel = new ViewModelProvider(Objects.requireNonNull(getActivity()), viewModelFactory).get(MainViewModel.class);
+        mainViewModel.init();
     }
 
+    private void configureUI(View root) {
+        if (root.findViewById(R.id.fragment_detail_app_bar) != null) {
+            Toolbar toolbar = (Toolbar) root.findViewById(R.id.fragment_detail_toolbar);
+            toolbar.setTitle("");
+            MainActivity activity = (MainActivity) getActivity();
+            assert activity != null;
+        }
+        txtStateProperty = root.findViewById(R.id.fragment_detail_state_text);
+        txtTypeProperty = root.findViewById(R.id.fragment_detail_type);
+        txtDescriptionProperty = root.findViewById(R.id.fragment_detail_description);
+        txtLocationProperty = root.findViewById(R.id.fragment_detail_location);
+        txtAreaProperty = root.findViewById(R.id.fragment_detail_area);
+        txtPrisProperty = root.findViewById(R.id.fragment_detail_pris);
+        txtNbRoomProperty = root.findViewById(R.id.fragment_detail_nb_room);
+        chipGroupPointsOfInterestProperty = root.findViewById(R.id.fragment_detail_point_of_interest_chip_group);
+        recyclerViewPhotosProperty = root.findViewById(R.id.fragment_detail_photos_recycler_view);
+        btnCalculatorMortgage = root.findViewById(R.id.fragment_detail_calculate_mortgage_button);
+
+        recyclerViewPhotosProperty.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+        adapter = new AdapterRecyclerViewPhotosList(false, mainViewModel);
+        recyclerViewPhotosProperty.setAdapter(adapter);
+
+        //MENU
+        itemSellMenu = root.findViewById(R.id.fragment_detail_sell_button);
+        itemEditMenu = root.findViewById(R.id.fragment_detail_edit_button);
+    }
     private void updateUIWithData(PropertyObj propertyObj) {
         txtTypeProperty.setText(propertyObj.getProperty().getType());
         txtDescriptionProperty.setText(propertyObj.getProperty().getDescription());
@@ -159,7 +172,6 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
             }
         }
 
-
         PropertyLocationLatitude = propertyObj.getAddress().getLatLocation();
         PropertyLocationLongitude = propertyObj.getAddress().getLongLocation();
 
@@ -178,44 +190,13 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
 
     }
 
-    private void configureUI(View root) {
+    private void getData() {
+        Long idProperty = mainViewModel.getCurrentIndexPropertyDetail();
 
-        if (root.findViewById(R.id.fragment_detail_app_bar) != null) {
-            Toolbar toolbar = (Toolbar) root.findViewById(R.id.fragment_detail_toolbar);
-            toolbar.setTitle("");
-            // toolbar.inflateMenu(R.menu.menu_detail_edit);
-            MainActivity activity = (MainActivity) getActivity();
-            assert activity != null;
-            //activity.setSupportActionBar(toolbar);
-            //activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            //CollapsingToolbarLayout toolBarLayout = (CollapsingToolbarLayout) root.findViewById(R.id.fragment_detail_toolbar_layout);
-            //toolBarLayout.setTitle("");
+        if (idProperty != null) {
+            currentProperty = mainViewModel.getAPropertyObj(idProperty);
+            currentProperty.observe(Objects.requireNonNull(getActivity()), this::updateUIWithData);
         }
-        txtStateProperty = root.findViewById(R.id.fragment_detail_state_text);
-        txtTypeProperty = root.findViewById(R.id.fragment_detail_type);
-        txtDescriptionProperty = root.findViewById(R.id.fragment_detail_description);
-        txtLocationProperty = root.findViewById(R.id.fragment_detail_location);
-        txtAreaProperty = root.findViewById(R.id.fragment_detail_area);
-        txtPrisProperty = root.findViewById(R.id.fragment_detail_pris);
-        txtNbRoomProperty = root.findViewById(R.id.fragment_detail_nb_room);
-        chipGroupPointsOfInterestProperty = root.findViewById(R.id.fragment_detail_point_of_interest_chip_group);
-        recyclerViewPhotosProperty = root.findViewById(R.id.fragment_detail_photos_recycler_view);
-        btnCalculatorMortgage = root.findViewById(R.id.fragment_detail_calculate_mortgage_button);
-
-        recyclerViewPhotosProperty.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
-        adapter = new AdapterRecyclerViewPhotosList(false, mainViewModel);
-        recyclerViewPhotosProperty.setAdapter(adapter);
-
-        //MENU
-        itemSellMenu = root.findViewById(R.id.fragment_detail_sell_button);
-        itemEditMenu = root.findViewById(R.id.fragment_detail_edit_button);
-    }
-
-    private void configureViewModel() {
-        ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(getActivity());
-        this.mainViewModel = new ViewModelProvider(Objects.requireNonNull(getActivity()), viewModelFactory).get(MainViewModel.class);
-        mainViewModel.init();
-        Log.d("MainActivity", "The id of property is : " + mainViewModel.getCurrentIndexPropertyDetail());
     }
 
     private void showDialogSellProperty (boolean isSell){
@@ -223,19 +204,40 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
 
         if(!isSell) {
             dialogBuilder.setTitle("Are you sure of sell ?");
-            dialogBuilder.setPositiveButton("Sell", (dialogInterface, i) -> {
-                mainViewModel.updateStateOfProperty(mainViewModel.getCurrentIndexPropertyDetail(), "IS_SELL");
-            });
+            dialogBuilder.setPositiveButton("Sell", (dialogInterface, i) -> mainViewModel.updateStateOfProperty(mainViewModel.getCurrentIndexPropertyDetail(), "IS_SELL"));
         }else{
             dialogBuilder.setTitle("Are you sure you indicate this is unsold ?");
-            dialogBuilder.setPositiveButton("Unsold", (dialogInterface, i) -> {
-                mainViewModel.updateStateOfProperty(mainViewModel.getCurrentIndexPropertyDetail(), "NOT_SELL");
-            });
+            dialogBuilder.setPositiveButton("Unsold", (dialogInterface, i) -> mainViewModel.updateStateOfProperty(mainViewModel.getCurrentIndexPropertyDetail(), "NOT_SELL"));
         }
 
         dialogBuilder.setNegativeButton("Cancel", null);
         AlertDialog dialog = dialogBuilder.create();
         dialog.show();
+    }
+    private void showDialogEditPicture(Bitmap bitmap) {
+        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+        alertDialogBuilder.setTitle("Define the description");
+        LayoutInflater inflater = (LayoutInflater) Objects.requireNonNull(getContext()).getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View v = inflater.inflate(R.layout.dialog_edit_picture, null);
+        alertDialogBuilder.setView(v);
+        alertDialogBuilder.setPositiveButton("Add", ((dialogInterface, i) -> {
+            if (dialogInputDescription.getEditText() != null) {
+                String description = dialogInputDescription.getEditText().getText().toString();
+                Photo photo = new Photo(bitmap, description, 0);
+                mainViewModel.addPhotoOfTheProperty(photo);
+            }else{
+                Log.e("AddFragment", "Error View");
+            }
+        }));
+        alertDialogBuilder.setNegativeButton("Cancel", null);
+
+        AlertDialog dialog = alertDialogBuilder.create();
+        dialog.show();
+
+        ImageView imgVPicture = dialog.findViewById(R.id.dialog_edit_picture);
+        imgVPicture.setImageBitmap(bitmap);
+        dialogInputDescription = dialog.findViewById(R.id.dialog_edit_picture_description_input);
+
     }
 
     @Override
@@ -254,8 +256,10 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
 
         if (resultCode == RESULT_OK) {
             try {
+                assert data != null;
                 final Uri imageUri = data.getData();
-                final InputStream imageStream = getActivity().getContentResolver().openInputStream(imageUri);
+                assert imageUri != null;
+                final InputStream imageStream = Objects.requireNonNull(getActivity()).getContentResolver().openInputStream(imageUri);
                 final Bitmap bitmap = BitmapFactory.decodeStream(imageStream);
                 Bitmap bitmapCompressed = Utils.compressImage(bitmap);
                 showDialogEditPicture(bitmapCompressed);
@@ -265,34 +269,5 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
             }
         }
     }
-    //TODO ADAPT
-    private void showDialogEditPicture(Bitmap bitmap) {
-        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
-        alertDialogBuilder.setTitle("Define the description");
-        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View v = inflater.inflate(R.layout.dialog_edit_picture, null);
-        alertDialogBuilder.setView(v);
-        alertDialogBuilder.setPositiveButton("Add", ((dialogInterface, i) -> {
-            if (dialogInputDescription.getEditText() != null) {
-                String description = dialogInputDescription.getEditText().getText().toString();
-                Photo photo = new Photo(bitmap, description, 0);
-                mainViewModel.addPhotoOfTheProperty(photo);
-                //dialogEditProperty.addPhotoInAdapter(photo);
-            }else{
-                Log.e("AddFragment", "Error View");
-            }
-        }));
-        alertDialogBuilder.setNegativeButton("Cancel", null);
-
-        AlertDialog dialog = alertDialogBuilder.create();
-        dialog.show();
-
-        ImageView imgVPicture = dialog.findViewById(R.id.dialog_edit_picture);
-        imgVPicture.setImageBitmap(bitmap);
-        dialogInputDescription = dialog.findViewById(R.id.dialog_edit_picture_description_input);
-
-    }
-
-
 
 }

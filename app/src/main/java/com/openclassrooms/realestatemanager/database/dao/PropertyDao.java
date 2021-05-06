@@ -31,29 +31,35 @@ public interface PropertyDao {
     @Query("SELECT * FROM Property WHERE idAgent = :userId")
     LiveData<List<PropertyObj>> getPropertyWithAllAttribute (long userId);
 
-    //use for the content provider
+    //FOR CONTENT PROVIDER
     @Query("SELECT * FROM Property WHERE idAgent = :userId")
     Cursor getCursorProperty (long userId);
 
+    //FOR CONTENT PROVIDER
     @Query("SELECT * FROM Property WHERE id = :id")
     Cursor getCursorPropertyById (long id);
 
-    @Query("SELECT * FROM Property WHERE idAgent = :userId")
-    LiveData<List<Property>> getProperty(long userId);
-
+    //GET A PROPERTY WITH ALL ATTRIBUTES
     @Query("SELECT * FROM Property WHERE id = :idProperty")
     LiveData<PropertyObj> getAPropertyObj(long idProperty);
 
+    //GET ALL PROPERTIES OF A AGENT
+    @Query("SELECT * FROM Property WHERE idAgent = :userId")
+    LiveData<List<Property>> getProperty(long userId);
 
+    //INSERT
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insertProperty (Property property);
 
+    //UPDATE
     @Update
     int updateProperty(Property property);
 
+    //UPDATE STATE OF A PROPERTY
     @Query("UPDATE Property SET state = :state WHERE id = :id")
     int updateStateProperty(long id, String state);
 
+    //DELETE
     @Query("DELETE FROM Property WHERE id = :idProperty")
     int deleteProperty(long idProperty);
 }

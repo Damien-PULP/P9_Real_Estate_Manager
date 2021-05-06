@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2021. This code has been written by Damien De Lombaert
+  -->
+
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@color/ic_launcher_icon_background"/>
+    <foreground android:drawable="@drawable/ic_launcher_icon_foreground"/>
+</adaptive-icon>

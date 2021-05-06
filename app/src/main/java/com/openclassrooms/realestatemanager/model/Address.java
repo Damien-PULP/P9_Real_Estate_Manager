@@ -6,11 +6,10 @@ package com.openclassrooms.realestatemanager.model;
 
 import android.content.ContentValues;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
-
-import com.openclassrooms.realestatemanager.utils.Utils;
 
 @Entity (foreignKeys = @ForeignKey(entity = Property.class, parentColumns = "id", childColumns = "idProperty"))
 public class Address {
@@ -97,6 +96,7 @@ public class Address {
         this.longLocation = longLocation;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return country + ", " + city + ", " + postalCode + ", " + street + " " + numberStreet;

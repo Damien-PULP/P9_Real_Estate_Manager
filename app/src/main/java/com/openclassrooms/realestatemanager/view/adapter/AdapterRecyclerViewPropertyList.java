@@ -12,15 +12,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.textfield.TextInputLayout;
+import com.google.android.material.imageview.ShapeableImageView;
 import com.openclassrooms.realestatemanager.R;
-import com.openclassrooms.realestatemanager.model.Property;
 import com.openclassrooms.realestatemanager.model.PropertyObj;
+import com.openclassrooms.realestatemanager.utils.Utils;
 import com.openclassrooms.realestatemanager.view.activity.MainActivity;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.Inflater;
 
 public class AdapterRecyclerViewPropertyList extends RecyclerView.Adapter<AdapterRecyclerViewPropertyList.ViewHolderProperty> {
 
@@ -29,6 +28,7 @@ public class AdapterRecyclerViewPropertyList extends RecyclerView.Adapter<Adapte
 
     private int currentSelection = 0;
 
+    @NonNull
     @Override
     public ViewHolderProperty onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         context = parent.getContext();
@@ -52,13 +52,14 @@ public class AdapterRecyclerViewPropertyList extends RecyclerView.Adapter<Adapte
         notifyDataSetChanged();
     }
 
+    //VIEW HOLDER of this adapter
     static class ViewHolderProperty extends RecyclerView.ViewHolder {
 
-        private LinearLayout item;
-        private ImageView icon;
-        private TextView type;
-        private TextView location;
-        private TextView pris;
+        private final LinearLayout item;
+        private final ShapeableImageView icon;
+        private final TextView type;
+        private final TextView location;
+        private final TextView pris;
 
         public ViewHolderProperty(@NonNull View itemView) {
             super(itemView);
@@ -70,20 +71,17 @@ public class AdapterRecyclerViewPropertyList extends RecyclerView.Adapter<Adapte
         }
 
         public void bind(final Context context, final AdapterRecyclerViewPropertyList adapter, PropertyObj propertyObj){
-            // TODO Modify this way
             item.setOnClickListener(view -> {
                 MainActivity activity = (MainActivity) context;
-
                 activity.setCurrentProperty(propertyObj.getProperty().getId());
                 activity.switchFragment(1);
-                // TODO verify if is fine
                 adapter.currentSelection = getAdapterPosition();
                 adapter.notifyDataSetChanged();
             });
 
             if(propertyObj.getPhotos().size() > 0){
-                Bitmap bitmap = propertyObj.getPhotos().get(0).getBitmapPhoto();
-                icon.setImageBitmap(bitmap);
+                Bitmap bitmap =propertyObj.getPhotos().get(0).getBitmapPhoto();
+                icon.setImageBitmap( Utils.createRoundedBorderOfBitmap(bitmap));
             }
 
             type.setText(propertyObj.getProperty().getType());
@@ -99,11 +97,7 @@ public class AdapterRecyclerViewPropertyList extends RecyclerView.Adapter<Adapte
 
         }
         public void adaptTheTracking (boolean isSelected){
-            if(isSelected){
-                item.setSelected(true);
-            }else{
-                item.setSelected(false);
-            }
+            item.setSelected(isSelected);
         }
     }
 

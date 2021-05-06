@@ -7,7 +7,6 @@ package com.openclassrooms.realestatemanager.view.fragment;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +15,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -43,6 +43,7 @@ import java.util.Objects;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
 
+    //DATA
     private List<PropertyObj> propertyObjs = new ArrayList<>();
 
     private double userLatitude;
@@ -51,53 +52,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     private MainViewModel mainViewModel;
 
     private FusedLocationProviderClient fusedLocationClient;
+    private LifecycleOwner activity;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_map, container, false);
+        activity = getActivity();
         configureViewModel();
         getCurrentLocation();
 
         return root;
-    }
-
-    // TODO Error when change rotation
-    private void getUser() {
-        mainViewModel.getUser().observe(getActivity(), this::getProperty);
-    }
-
-    private void getCurrentLocation() {
-        //GET LOCATION
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
-        if (mainViewModel.checkPermissionLocation((MainActivity) getActivity())) {
-            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                return;
-            }
-            fusedLocationClient.getLastLocation().addOnSuccessListener(getActivity(), location -> {
-                if (location != null) {
-                    userLatitude = location.getLatitude();
-                    userLongitude = location.getLongitude();
-                    getUser();
-                }
-            }).addOnFailureListener(getActivity(), e -> e.printStackTrace());
-        }
-    }
-
-    private void getProperty(User user) {
-        if (user != null)
-            mainViewModel.getProperty(user.getId()).observe(getActivity(), this::updateProperty);
-    }
-
-    private void updateProperty(List<PropertyObj> propertyObjs) {
-        this.propertyObjs = propertyObjs;
-        configureMap();
     }
 
     private void configureViewModel() {
@@ -106,11 +70,53 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         mainViewModel.init();
     }
 
+    private void getCurrentLocation() {
+        //GET LOCATION
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(Objects.requireNonNull(getActivity()));
+        if (mainViewModel.checkPermissionLocation((MainActivity) getActivity())) {
+            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                getCurrentLocation();
+            }
+            fusedLocationClient.getLastLocation().addOnSuccessListener(getActivity(), location -> {
+                if (location != null) {
+                    userLatitude = location.getLatitude();
+                    userLongitude = location.getLongitude();
+                    getUser();
+                }
+            }).addOnFailureListener(getActivity(), Throwable::printStackTrace);
+        }
+    }
+
+    private void getUser() {
+        assert mainViewModel.getUser() != null;
+            mainViewModel.getUser().observe(Objects.requireNonNull(activity), this::getProperty);
+    }
+
+    private void getProperty(User user) {
+        if (user != null)
+            mainViewModel.getProperty(user.getId()).observe(Objects.requireNonNull(activity), this::updateProperty);
+    }
+    private void updateProperty(List<PropertyObj> propertyObjs) {
+        this.propertyObjs = propertyObjs;
+        configureMap();
+    }
+
     private void configureMap() {
         //MAP Fragment
-        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.fragment_map_support_map_fragment);
-        if (mapFragment != null) {
-            mapFragment.getMapAsync(this);
+        if(((MainActivity)activity).getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_detail) != null){
+            //LAND VIEW
+            //MAP Fragment
+            SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.fragment_detail_location_maps_land);
+            if (mapFragment != null) {
+                mapFragment.getMapAsync(this);
+            }
+        }else{
+            //MAP Fragment
+            SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.fragment_detail_location_maps);
+            if (mapFragment != null) {
+                mapFragment.getMapAsync(this);
+            }
+
         }
     }
 
@@ -131,13 +137,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(locationUser, 10));
 
         if (ActivityCompat.checkSelfPermission(Objects.requireNonNull(getContext()), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return;
         }
         googleMap.setMyLocationEnabled(true);
@@ -148,40 +147,27 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     public void onInfoWindowClick(Marker marker) {
         mainViewModel.setCurrentIndexPropertyDetail(Long.parseLong(marker.getTitle()));
         if(getActivity() != null) ((MainActivity) getActivity()).switchFragment(1);
-        /*Toast.makeText(getActivity(), "Info window clicked",
-                Toast.LENGTH_SHORT).show();*/
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case 1000: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                        // TODO: Consider calling
-                        //    ActivityCompat#requestPermissions
-                        // here to request the missing permissions, and then overriding
-                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                        //                                          int[] grantResults)
-                        // to handle the case where the user grants the permission. See the documentation
-                        // for ActivityCompat#requestPermissions for more details.
-                        return;
-                    }
-
-                    fusedLocationClient.getLastLocation().addOnSuccessListener(getActivity(), location -> {
-                        if (location != null) {
-                            userLatitude = location.getLatitude();
-                            userLongitude = location.getLongitude();
-                            getUser();
-                        }
-                    });
-                } else {
-                    Toast.makeText(getActivity(), "Permission denied", Toast.LENGTH_SHORT).show();
+        if (requestCode == 1000) {// If request is cancelled, the result arrays are empty.
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.checkSelfPermission(Objects.requireNonNull(getActivity()), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    return;
                 }
-                break;
+
+                fusedLocationClient.getLastLocation().addOnSuccessListener(getActivity(), location -> {
+                    if (location != null) {
+                        userLatitude = location.getLatitude();
+                        userLongitude = location.getLongitude();
+                        getUser();
+                    }
+                });
+            } else {
+                Toast.makeText(getActivity(), "Permission denied", Toast.LENGTH_SHORT).show();
             }
         }
     }

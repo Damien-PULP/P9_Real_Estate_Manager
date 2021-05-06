@@ -69,14 +69,16 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_weight="1"
-                android:text="Not sold" />
+                android:text="Not sold"
+                />
 
             <Button
                 android:id="@+id/dialog_search_view_sold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Sold" />
+                android:text="Sold"
+                style="?attr/borderlessButtonStyle"/>
         </LinearLayout>
 
         <TextView
@@ -106,7 +108,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:baselineAligned="false">
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/dialog_search_view_surface_min"
@@ -148,7 +151,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:baselineAligned="false">
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/dialog_search_view_pris_min"
@@ -228,20 +232,23 @@
                 app:boxCornerRadiusTopStart="20dp"
                 app:boxCornerRadiusBottomEnd="20dp"
                 app:boxCornerRadiusBottomStart="20dp"
-                app:boxCornerRadiusTopEnd="20dp" />
+                app:boxCornerRadiusTopEnd="20dp"
+                style="?attr/borderlessButtonStyle"/>
             <Button
                 android:id="@+id/dialog_search_view_date_on_month"
                 android:text="month"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_marginEnd="8dp"/>
+                android:layout_marginEnd="8dp"
+                style="?attr/borderlessButtonStyle"/>
             <Button
                 android:id="@+id/dialog_search_view_date_on_year"
                 android:text="year"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"/>
+                android:layout_weight="1"
+                style="?attr/borderlessButtonStyle"/>
         </LinearLayout>
 
         <TextView

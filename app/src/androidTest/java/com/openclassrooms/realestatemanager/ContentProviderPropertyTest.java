@@ -41,6 +41,7 @@ public class ContentProviderPropertyTest {
         //FOR USER
         contentResolver.insert(PropertyContentProvider.URI_USER, generateUser());
         final Cursor cursorUser = contentResolver.query(PropertyContentProvider.URI_USER, null, null, null,null);
+        assert cursorUser != null;
         final int size = cursorUser.getColumnCount();
         final int index_id = cursorUser.getColumnIndex("id");
         final int index_firstName = cursorUser.getColumnIndex("firstName");
@@ -56,9 +57,11 @@ public class ContentProviderPropertyTest {
 
         // FOR PROPERTY
         final Uri uriProperty = contentResolver.insert(PropertyContentProvider.URI_PROPERTY, generateProperty());
+        assert uriProperty != null;
         final long idProperty = ContentUris.parseId(uriProperty);
         final Cursor cursorPropertyInserted = contentResolver.query(PropertyContentProvider.URI_PROPERTY_ID, null, String.valueOf(idProperty), null, null);
 
+        assert cursorPropertyInserted != null;
         final int size_property = cursorPropertyInserted.getColumnCount();
         final int index_property_type = cursorPropertyInserted.getColumnIndex("type");
         final int index_property_description = cursorPropertyInserted.getColumnIndex("description");
@@ -78,6 +81,7 @@ public class ContentProviderPropertyTest {
         contentResolver.insert(PropertyContentProvider.URI_ADDRESS, generateAddress(idProperty));
         final Cursor cursorOfAddressOfProperty = contentResolver.query(PropertyContentProvider.URI_ADDRESS_ID, null, String.valueOf(idProperty), null, null);
 
+        assert cursorOfAddressOfProperty != null;
         final int index_country = cursorOfAddressOfProperty.getColumnIndex("country");
         final int index_street = cursorOfAddressOfProperty.getColumnIndex("street");
 

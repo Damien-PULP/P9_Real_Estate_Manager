@@ -10,7 +10,6 @@ import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.net.Uri;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -57,6 +56,7 @@ public class PropertyContentProvider extends ContentProvider {
     @Override
     public boolean onCreate() { return true; }
 
+    //GETTER
     @Nullable
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] strings1, @Nullable String s1) {
@@ -81,11 +81,13 @@ public class PropertyContentProvider extends ContentProvider {
                     return cursorOfAddress;
                 case CODE_PROPERTY_ID :
                     // get all property
+                    assert selection != null;
                     long propertyId = Long.parseLong(selection);
                     final Cursor cursorOfAPropertyById = RealEstateManagerDatabase.getInstance(getContext()).propertyDao().getCursorPropertyById(propertyId);
                     cursorOfAPropertyById.setNotificationUri(getContext().getContentResolver(), uri);
                     return cursorOfAPropertyById;
                 case CODE_ADDRESS_ID :
+                    assert selection != null;
                     long propertyIdOfAddress = Long.parseLong(selection);
                     final Cursor cursorOfAddressOfAProperty = RealEstateManagerDatabase.getInstance(getContext()).addressDao().getCursorOfAddress(propertyIdOfAddress);
                     cursorOfAddressOfAProperty.setNotificationUri(getContext().getContentResolver(), uri);
@@ -97,6 +99,7 @@ public class PropertyContentProvider extends ContentProvider {
         throw new IllegalArgumentException("Not data found for the uri : " + uri);
     }
 
+    //GETTER TYPE
     @Nullable
     @Override
     public String getType(@NonNull Uri uri) {
@@ -114,24 +117,28 @@ public class PropertyContentProvider extends ContentProvider {
         }
     }
 
+    //INSERT
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues contentValues) {
         if(getContext() != null){
             switch (uriMatcher.match(uri)){
                 case CODE_USER :
+                    assert contentValues != null;
                     final long idUser = RealEstateManagerDatabase.getInstance(getContext()).userDao().createUser(User.fromContentValues(contentValues));
                     if(idUser != 0) {
                         getContext().getContentResolver().notifyChange(uri, null);
                         return ContentUris.withAppendedId(uri, idUser);
                     }
                 case CODE_PROPERTY :
+                    assert contentValues != null;
                     final long idProperty = RealEstateManagerDatabase.getInstance(getContext()).propertyDao().insertProperty(Property.fromContentValues(contentValues));
                     if(idProperty != 0){
                         getContext().getContentResolver().notifyChange(uri, null);
                         return ContentUris.withAppendedId(uri, idProperty);
                     }
                 case CODE_ADDRESS :
+                    assert contentValues != null;
                     final long idAddress = RealEstateManagerDatabase.getInstance(getContext()).addressDao().insertAddress(Address.fromContentValues(contentValues));
                     if(idAddress != 0){
                         getContext().getContentResolver().notifyChange(uri, null);
@@ -144,6 +151,7 @@ public class PropertyContentProvider extends ContentProvider {
         throw new IllegalArgumentException("Failed to insert data : " + uri);
     }
 
+    //DELETE
     @Override
     public int delete(@NonNull Uri uri, @Nullable String s, @Nullable String[] strings) {
         if (getContext() != null){
@@ -163,15 +171,18 @@ public class PropertyContentProvider extends ContentProvider {
         throw new IllegalArgumentException("Failed to delete data " + uri);
     }
 
+    //UPDATE
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues contentValues, @Nullable String s, @Nullable String[] strings) {
         if(getContext() != null){
             switch (uriMatcher.match(uri)){
                 case CODE_PROPERTY :
+                    assert contentValues != null;
                     final int countProperty = RealEstateManagerDatabase.getInstance(getContext()).propertyDao().updateProperty(Property.fromContentValues(contentValues));
                     getContext().getContentResolver().notifyChange(uri, null);
                     return countProperty;
                 case CODE_ADDRESS :
+                    assert contentValues != null;
                     final int countAddress = RealEstateManagerDatabase.getInstance(getContext()).addressDao().updateAddress(Address.fromContentValues(contentValues));
                     getContext().getContentResolver().notifyChange(uri, null);
                     return countAddress;

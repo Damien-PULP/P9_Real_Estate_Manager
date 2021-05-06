@@ -15,23 +15,22 @@ import androidx.room.PrimaryKey;
         childColumns = "idProperty"))
 public class Photo {
 
-    @PrimaryKey(autoGenerate = true) @NonNull
+    @PrimaryKey(autoGenerate = true)
     private long id;
-    @NonNull private Bitmap bitmapPhoto;
+    private Bitmap bitmapPhoto;
     private String description;
-    @NonNull private long idProperty;
+    private long idProperty;
 
     //Need empty constructor
     public Photo() {
     }
-    public Photo(@NonNull Bitmap bitmapPhoto, String description, @NonNull long idProperty) {
+    public Photo(@NonNull Bitmap bitmapPhoto, String description, long idProperty) {
         this.bitmapPhoto = bitmapPhoto;
         this.description = description;
         this.idProperty = idProperty;
     }
 
     //GETTER
-    @NonNull
     public long getId() {
         return id;
     }
@@ -42,13 +41,12 @@ public class Photo {
     public String getDescription() {
         return description;
     }
-    @NonNull
     public long getIdProperty() {
         return idProperty;
     }
 
     //SETTER
-    public void setId(@NonNull long id) {
+    public void setId(long id) {
         this.id = id;
     }
     public void setBitmapPhoto(@NonNull Bitmap btmIcon) {
@@ -57,7 +55,7 @@ public class Photo {
     public void setDescription(String description) {
         this.description = description;
     }
-    public void setIdProperty(@NonNull long idProperty) {
+    public void setIdProperty(long idProperty) {
         this.idProperty = idProperty;
     }
 

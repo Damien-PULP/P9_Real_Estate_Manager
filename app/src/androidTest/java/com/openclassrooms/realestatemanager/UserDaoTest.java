@@ -9,7 +9,7 @@ import androidx.room.Room;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 
-import com.openclassrooms.realestatemanager.Utils.LiveDataTestUtil;
+import com.openclassrooms.realestatemanager.utils.LiveDataTestUtil;
 import com.openclassrooms.realestatemanager.database.database.RealEstateManagerDatabase;
 import com.openclassrooms.realestatemanager.model.User;
 
@@ -19,8 +19,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4.class)
 public class UserDaoTest {
@@ -30,13 +30,13 @@ public class UserDaoTest {
 
     //USER DATA
     private static long uId = 1;
-    private static User user = new User("Damien", "De Lombaert", "email@gmail.com", "0404560844", "pathIcon", "password");
+    private static final User user = new User("Damien", "De Lombaert", "email@gmail.com", "0404560844", "pathIcon", "password");
 
     @Rule
     public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
 
     @Before
-    public void initDb () throws Exception {
+    public void initDb () {
         this.database = Room.inMemoryDatabaseBuilder(InstrumentationRegistry.getInstrumentation().getContext(),
                 RealEstateManagerDatabase.class)
                 .allowMainThreadQueries()
@@ -45,7 +45,7 @@ public class UserDaoTest {
     }
 
     @After
-    public void closeDb () throws Exception {
+    public void closeDb () {
         database.close();
     }
 
@@ -53,7 +53,7 @@ public class UserDaoTest {
     public void insertAndGetUser () throws InterruptedException {
         this.database.userDao().createUser(user);
         User userDb = LiveDataTestUtil.getValue(this.database.userDao().getUser(user.getFirstName(), user.getSecondName(), user.getPassword()));
-        assertTrue(userDb.getFirstName().equals(user.getFirstName()));
+        assertEquals(userDb.getFirstName(), user.getFirstName());
     }
 
     @Test
@@ -63,7 +63,7 @@ public class UserDaoTest {
         userUpdated.setFirstName("Paul");
         this.database.userDao().updateUser(userUpdated);
         User userDb = LiveDataTestUtil.getValue(this.database.userDao().getUser(userUpdated.getFirstName(), userUpdated.getSecondName(), userUpdated.getPassword()));
-        assertTrue(userDb.getFirstName().equals(user.getFirstName()));
+        assertEquals(userDb.getFirstName(), user.getFirstName());
     }
 
     @Test

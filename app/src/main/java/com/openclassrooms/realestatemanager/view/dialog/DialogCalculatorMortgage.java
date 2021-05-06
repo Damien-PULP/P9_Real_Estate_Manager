@@ -2,11 +2,9 @@ package com.openclassrooms.realestatemanager.view.dialog;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 
-import com.bumptech.glide.util.Util;
 import com.google.android.material.textfield.TextInputLayout;
 import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.utils.Utils;
@@ -14,6 +12,8 @@ import com.openclassrooms.realestatemanager.utils.Utils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import java.util.Objects;
 
 public class DialogCalculatorMortgage extends AlertDialog {
 
@@ -25,7 +25,7 @@ public class DialogCalculatorMortgage extends AlertDialog {
     private TextInputLayout inputRate;
     private Button btnCalculate;
 
-    private Context context;
+    private final Context context;
     private float pris;
 
     public DialogCalculatorMortgage(Context context, float pris) {
@@ -36,7 +36,6 @@ public class DialogCalculatorMortgage extends AlertDialog {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         View content = LayoutInflater.from(context).inflate(R.layout.dialog_calculator_mortgage, null);
         setView(content);
         onConfigureDialog(content);
@@ -51,16 +50,16 @@ public class DialogCalculatorMortgage extends AlertDialog {
         btnCalculate = content.findViewById(R.id.dialog_calculator_mortgage_btn);
         txtResult = content.findViewById(R.id.dialog_calculator_mortgage_result_txt);
 
-        inputPris.getEditText().setText(String.valueOf(pris));
+        Objects.requireNonNull(inputPris.getEditText()).setText(String.valueOf(pris));
 
         btnCalculate.setOnClickListener(v -> Calculate());
     }
 
     private void Calculate() {
-        pris = Float.parseFloat(inputPris.getEditText().getText().toString());
-        int bring = Integer.parseInt(inputBring.getEditText().getText().toString());
-        int time = Integer.parseInt(inputTime.getEditText().getText().toString());
-        float rate = Float.parseFloat(inputRate.getEditText().getText().toString());
+        pris = Float.parseFloat(Objects.requireNonNull(inputPris.getEditText()).getText().toString());
+        int bring = Integer.parseInt(Objects.requireNonNull(inputBring.getEditText()).getText().toString());
+        int time = Integer.parseInt(Objects.requireNonNull(inputTime.getEditText()).getText().toString());
+        float rate = Float.parseFloat(Objects.requireNonNull(inputRate.getEditText()).getText().toString());
 
         float monthlyPris = Utils.calculateMonthlyPayment(pris, bring, time, rate);
         float totalPris = Utils.calculateTotalPrisOfProperty(monthlyPris, time);

@@ -13,36 +13,34 @@ import androidx.room.RawQuery;
 import androidx.room.Update;
 import androidx.sqlite.db.SupportSQLiteQuery;
 
-import com.openclassrooms.realestatemanager.model.Photo;
 import com.openclassrooms.realestatemanager.model.PointOfInterest;
-import com.openclassrooms.realestatemanager.model.PropertyObj;
 
 import java.util.List;
 
 @Dao
 public interface PointOfInterestDao {
 
-    /** To Search Point by Name */
+    // RAW QUERY FOR ADVANCED SEARCHING
     @RawQuery(observedEntities = PointOfInterest.class)
     LiveData<List<PointOfInterest>> searchPointOfInterestWithFilter(SupportSQLiteQuery query);
 
-    // Point of Interest
+    // GET ALL POINT OF A PROPERTY
     @Query("SELECT * FROM PointOfInterest WHERE id = :idProperty")
     LiveData<List<PointOfInterest>> getPointsOfInterest(long idProperty);
 
-    // TODO Multiple Name
+    // GET ALL POINTS
     @Query("SELECT DISTINCT * FROM PointOfInterest")
     LiveData<List<PointOfInterest>> getAllPointsOfInterest();
 
+    // INSERT
     @Insert (onConflict = OnConflictStrategy.IGNORE)
     long insertPointOfInterest (PointOfInterest pointOfInterest);
 
+    // UPDATE
     @Update
     int updatePointOfInterest(PointOfInterest pointOfInterest);
 
-    @Query("DELETE FROM PointOfInterest WHERE id = :id")
-    int deletePointOfInterest(long id);
-
+    // DELETE ALL POINTS OF A PROPERTY
     @Query("DELETE FROM PointOfInterest WHERE idProperty = :idProperty")
     int deletePointsOfInterestOfProperty(long idProperty);
 }
