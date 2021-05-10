@@ -18,6 +18,7 @@ import androidx.sqlite.db.SupportSQLiteQuery;
 import com.openclassrooms.realestatemanager.model.Property;
 import com.openclassrooms.realestatemanager.model.PropertyObj;
 
+import java.util.Date;
 import java.util.List;
 
 @Dao
@@ -56,8 +57,8 @@ public interface PropertyDao {
     int updateProperty(Property property);
 
     //UPDATE STATE OF A PROPERTY
-    @Query("UPDATE Property SET state = :state WHERE id = :id")
-    int updateStateProperty(long id, String state);
+    @Query("UPDATE Property SET state = :state, dateSold = :date WHERE id = :id")
+    int updateStateProperty(long id, String state, Date date);
 
     //DELETE
     @Query("DELETE FROM Property WHERE id = :idProperty")

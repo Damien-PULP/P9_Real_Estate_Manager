@@ -65,7 +65,7 @@ public class DialogCalculatorMortgage extends AlertDialog {
         float totalPris = Utils.calculateTotalPrisOfProperty(monthlyPris, time);
 
         txtResult.setVisibility(View.VISIBLE);
-        txtResult.setText("Your monthly payment is " + monthlyPris + "$ \n and the total pris on " + time + " years is " + totalPris + "$");
+        txtResult.setText(context.getResources().getString(R.string.msg_part1_mortgage) + monthlyPris + context.getResources().getString(R.string.msg_part2_mortgage) + time + context.getResources().getString(R.string.msg_part3_mortgage) + totalPris + "$");
 
     }
 }

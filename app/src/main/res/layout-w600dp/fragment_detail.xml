@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -17,7 +18,20 @@
         app:layout_constraintBottom_toTopOf="parent"
         app:layout_collapseMode="pin"/>
 
+    <TextView
+        android:id="@+id/fragment_detail_no_item_selected"
+        android:gravity="center"
+        style="@style/TextAppearance.MaterialComponents.Headline4"
+        android:visibility="gone"
+        android:text="no property selected !"
+        android:textColor="@color/colorAccent"
+        android:textStyle="bold"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/fragment_detail_content"
+        android:visibility="visible"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -179,9 +193,10 @@
 
                     <fragment
                         android:id="@+id/fragment_detail_location_maps_land"
+                        android:name="com.google.android.gms.maps.SupportMapFragment"
                         android:layout_width="match_parent"
-                        android:layout_height="350dp"
-                        android:name="com.google.android.gms.maps.SupportMapFragment"/>
+                        android:layout_height="350dp" />
+
                 </LinearLayout>
             </LinearLayout>
 

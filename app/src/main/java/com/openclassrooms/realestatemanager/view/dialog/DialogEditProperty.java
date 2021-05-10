@@ -141,7 +141,7 @@ public class DialogEditProperty extends AlertDialog implements GeoLocation.GeoLo
 
         this.buttonAddressProperty.setOnClickListener(v-> showDialogEditAddress());
         this.btnUpdateProperty.setOnClickListener(v-> updateThisProperty());
-        this.btnUpdateProperty.setText("Update property");
+        this.btnUpdateProperty.setText(R.string.update_property);
 
         adapter.updateData(mainViewModel.getPhotosOfTheProperty());
 
@@ -166,7 +166,7 @@ public class DialogEditProperty extends AlertDialog implements GeoLocation.GeoLo
         btnAddPhotoProperty.setOnClickListener(v -> {
             Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
             photoPickerIntent.setType("image/*");
-            photoPickerIntent.putExtra(Intent.EXTRA_TITLE, "Select a picture");
+            photoPickerIntent.putExtra(Intent.EXTRA_TITLE, activity.getResources().getString(R.string.select_a_picture));
             fragmentParent.startActivityForResult(photoPickerIntent, INPUT_FILE_REQUEST_CODE);
         });
     }
@@ -202,26 +202,26 @@ public class DialogEditProperty extends AlertDialog implements GeoLocation.GeoLo
 
                 mainViewModel.updateProperty(propertyUpdated, addressOfProperty, mainViewModel.getPhotosOfTheProperty(), pointsOfInterest);
 
-                showToastWithText("The property have updated !");
+                showToastWithText(activity.getResources().getString(R.string.msg_property_is_updated));
 
                 Intent intent = activity.getIntent();
                 activity.finish();
                 activity.startActivity(intent);
             }else{
-                showToastWithText("Complete the address of the property");
+                showToastWithText(activity.getResources().getString(R.string.msg_alert_complete_address));
             }
         }else{
-            showToastWithText("Complete all field");
+            showToastWithText(activity.getResources().getString(R.string.msg_alert_complete_all_field));
         }
     }
     //Show a dialog for modify the address
     private void showDialogEditAddress() {
         final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
-        alertDialogBuilder.setTitle("Enter the address");
+        alertDialogBuilder.setTitle(R.string.title_dialog_address);
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View v = inflater.inflate(R.layout.dialog_select_address, null);
         alertDialogBuilder.setView(v);
-        alertDialogBuilder.setPositiveButton("Valid", (((dialogInterface, i) -> {
+        alertDialogBuilder.setPositiveButton(R.string.valid_response, (((dialogInterface, i) -> {
             if(inputAddressCountryProperty != null && !Objects.requireNonNull(inputAddressNumberStreetProperty.getEditText()).getText().toString().equals("")){
                 String addressCountry = Objects.requireNonNull(inputAddressCountryProperty.getEditText()).getText().toString();
                 String addressCity = Objects.requireNonNull(inputAddressCityProperty.getEditText()).getText().toString();
@@ -234,7 +234,7 @@ public class DialogEditProperty extends AlertDialog implements GeoLocation.GeoLo
 
                 GeoLocation.getLocationOfAddress(address, activity, progressBar, layoutParent, this);
             }else{
-                showToastWithText("Enter a competed address");
+                showToastWithText(activity.getResources().getString(R.string.msg_alert_complete_address));
             }
 
         })));
@@ -268,6 +268,6 @@ public class DialogEditProperty extends AlertDialog implements GeoLocation.GeoLo
     }
     @Override
     public void onFailureGetLocation() {
-        showToastWithText("Enter a verified address");
+        showToastWithText(activity.getResources().getString(R.string.msg_alert_enter_verified_address));
     }
 }

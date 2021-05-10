@@ -14,4 +14,24 @@
         "interact, and exist in space and in relation to each other. Realistic lighting shows "
         "seams, divides space, and indicates moving parts.\n\n"
     </string>
+    <string name="msg_sure_remove_picture">Are you sure of remove this picture ?</string>
+    <string name="positive_response">Yes</string>
+    <string name="negative_response">No</string>
+    <string name="msg_property_is_sell">This property is sell</string>
+    <string name="msg_part1_mortgage">\"Your monthly payment is \"</string>
+    <string name="msg_part2_mortgage">\"$ \n and the total pris on \"</string>
+    <string name="msg_part3_mortgage">\" years is \"</string>
+    <string name="update_property">Update property</string>
+    <string name="msg_property_is_updated">The property have updated !</string>
+    <string name="msg_alert_complete_address">Complete the address of the property</string>
+    <string name="msg_alert_complete_all_field">Complete all field</string>
+    <string name="title_dialog_address">Enter the address</string>
+    <string name="msg_alert_enter_verified_address">Enter a verified address</string>
+    <string name="valid_response">Valid</string>
+    <string name="select_a_picture">Select a picture</string>
+    <string name="select_a_property">Search a property</string>
+    <string name="search_word">Search</string>
+    <string name="msg_alert_property_is_created">The property are created !</string>
+    <string name="positive_additional">Add</string>
+    <string name="add_description">Define the description</string>
 </resources>

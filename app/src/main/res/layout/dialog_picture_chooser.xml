@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2021. This code has been written by Damien De Lombaert
+  -->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:padding="8dp"
+    >
+
+    <ImageButton
+        android:id="@+id/dialog_picture_chooser_take"
+        android:background="@null"
+        android:src="@drawable/ic_baseline_photo_camera_24"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:padding="8dp"
+        android:layout_margin="8dp"/>
+
+    <ImageButton
+        android:id="@+id/dialog_picture_chooser_pick"
+        android:background="@null"
+        android:src="@drawable/ic_baseline_photo_library_24"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:padding="8dp"
+        android:layout_margin="8dp"/>
+</LinearLayout>

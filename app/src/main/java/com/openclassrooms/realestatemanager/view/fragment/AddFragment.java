@@ -9,11 +9,14 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -96,6 +99,7 @@ public class AddFragment extends Fragment implements GeoLocation.GeoLocationServ
     private Address addressOfProperty = new Address();
     //CONSTANT
     public static final int INPUT_FILE_REQUEST_CODE = 1;
+    public static final int INPUT_TAKE_PHOTO_REQUEST_CODE = 2;
     private static final String CHANNEL_ID = "NOTIFICATION_CHANNEL_PROPERTY";
 
 
@@ -158,11 +162,33 @@ public class AddFragment extends Fragment implements GeoLocation.GeoLocationServ
         recyclerViewPhotos.setAdapter(adapter);
 
         btnAddPhotoProperty.setOnClickListener(v -> {
-            Intent photoPickerIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-            photoPickerIntent.putExtra(Intent.EXTRA_TITLE, "Select a picture");
-            startActivityForResult(photoPickerIntent, INPUT_FILE_REQUEST_CODE);
+            takeOrPickPicture();
         });
         btnAddProperty.setOnClickListener(v -> insertProperty());
+    }
+
+    private void takeOrPickPicture (){
+        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = (LayoutInflater) Objects.requireNonNull(getContext()).getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View v = inflater.inflate(R.layout.dialog_picture_chooser, null);
+        alertDialogBuilder.setView(v);
+
+        AlertDialog dialog = alertDialogBuilder.show();
+
+        ImageButton takePicture = dialog.findViewById(R.id.dialog_picture_chooser_take);
+        ImageButton pickPicture = dialog.findViewById(R.id.dialog_picture_chooser_pick);
+
+        takePicture.setOnClickListener(view -> {
+            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            dialog.dismiss();
+            startActivityForResult(takePictureIntent,INPUT_TAKE_PHOTO_REQUEST_CODE);
+        });
+        pickPicture.setOnClickListener(view -> {
+            Intent photoPickerIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            photoPickerIntent.putExtra(Intent.EXTRA_TITLE, R.string.select_a_picture);
+            dialog.dismiss();
+            startActivityForResult(photoPickerIntent,INPUT_FILE_REQUEST_CODE);
+        });
     }
     //Create a property
     private void insertProperty() {
@@ -188,7 +214,7 @@ public class AddFragment extends Fragment implements GeoLocation.GeoLocationServ
                 Property property = new Property(type, pris, nbRoom, area, description, "NOT_SELL", new Date(), null, currentUser.getId());
                 mainViewModel.insertProperty(property, addressOfProperty, mainViewModel.getPhotosOfTheProperty(), pointsOfInterest);
 
-                showToastWithText("The property are created !");
+                showToastWithText(getString(R.string.msg_alert_property_is_created));
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     CharSequence nameChannel = "notification_chanel";
@@ -209,20 +235,20 @@ public class AddFragment extends Fragment implements GeoLocation.GeoLocationServ
                 MainActivity activity = (MainActivity) getActivity();
                 if(activity != null) activity.switchFragment(0);
             }else{
-                showToastWithText("Complete the address of the property");
+                showToastWithText(getString(R.string.msg_alert_complete_address));
             }
         }else{
-            showToastWithText("Complete all field");
+            showToastWithText(getString(R.string.msg_alert_complete_all_field));
         }
     }
     //Show dialog address or picture
     private void showDialogEditAddress() {
         final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
-        alertDialogBuilder.setTitle("Enter the address");
+        alertDialogBuilder.setTitle(R.string.title_dialog_address);
         LayoutInflater inflater = (LayoutInflater) Objects.requireNonNull(getContext()).getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View v = inflater.inflate(R.layout.dialog_select_address, null);
         alertDialogBuilder.setView(v);
-        alertDialogBuilder.setPositiveButton("Valid", (((dialogInterface, i) -> {
+        alertDialogBuilder.setPositiveButton(R.string.valid_response, (((dialogInterface, i) -> {
             if(inputAddressCountryProperty != null && !Objects.requireNonNull(inputAddressNumberStreetProperty.getEditText()).getText().toString().equals("")){
                 String addressCountry = Objects.requireNonNull(inputAddressCountryProperty.getEditText()).getText().toString();
                 String addressCity = Objects.requireNonNull(inputAddressCityProperty.getEditText()).getText().toString();
@@ -235,7 +261,7 @@ public class AddFragment extends Fragment implements GeoLocation.GeoLocationServ
 
                 GeoLocation.getLocationOfAddress(address, getActivity(), progressBar, layoutParent, this);
             }else{
-                showToastWithText("Enter a competed address");
+                showToastWithText(getString(R.string.msg_alert_complete_address));
             }
 
         })));
@@ -253,11 +279,11 @@ public class AddFragment extends Fragment implements GeoLocation.GeoLocationServ
     }
     private void showDialogEditPicture(Bitmap bitmap) {
         final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
-        alertDialogBuilder.setTitle("Define the description");
+        alertDialogBuilder.setTitle(R.string.add_description);
         LayoutInflater inflater = (LayoutInflater) Objects.requireNonNull(getContext()).getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View v = inflater.inflate(R.layout.dialog_edit_picture, null);
         alertDialogBuilder.setView(v);
-        alertDialogBuilder.setPositiveButton("Add", ((dialogInterface, i) -> {
+        alertDialogBuilder.setPositiveButton(R.string.positive_additional, ((dialogInterface, i) -> {
             if (dialogInputDescription.getEditText() != null) {
                 String description = dialogInputDescription.getEditText().getText().toString();
                 Photo photo = new Photo(bitmap, description, 0);
@@ -285,20 +311,33 @@ public class AddFragment extends Fragment implements GeoLocation.GeoLocationServ
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            try {
-                assert data != null;
-                final Uri imageUri = data.getData();
-                assert imageUri != null;
-                final InputStream imageStream = Objects.requireNonNull(getActivity()).getContentResolver().openInputStream(imageUri);
-                final Bitmap bitmap = BitmapFactory.decodeStream(imageStream);
-                Bitmap bitmapCompressed = Utils.compressImage(bitmap);
-                showDialogEditPicture(bitmapCompressed);
+        switch (requestCode){
+            case INPUT_FILE_REQUEST_CODE:
+                if (resultCode == RESULT_OK) {
+                    try {
+                        assert data != null;
+                        final Uri imageUri = data.getData();
+                        assert imageUri != null;
+                        final InputStream imageStream = Objects.requireNonNull(getActivity()).getContentResolver().openInputStream(imageUri);
+                        final Bitmap bitmap = BitmapFactory.decodeStream(imageStream);
+                        Bitmap bitmapCompressed = Utils.compressImage(bitmap);
+                        showDialogEditPicture(bitmapCompressed);
 
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                break;
+            case INPUT_TAKE_PHOTO_REQUEST_CODE:
+                if (resultCode == RESULT_OK) {
+                    Bundle extras = data.getExtras();
+                    Bitmap bitmap = (Bitmap) extras.get("data");
+                    Bitmap bitmapCompressed = Utils.compressImage(bitmap);
+                    showDialogEditPicture(bitmapCompressed);
+                }
+                break;
         }
+
     }
 
     @Override
@@ -309,6 +348,6 @@ public class AddFragment extends Fragment implements GeoLocation.GeoLocationServ
     }
     @Override
     public void onFailureGetLocation() {
-        showToastWithText("Enter a verified address");
+        showToastWithText(getString(R.string.msg_alert_enter_verified_address));
     }
 }

@@ -16,7 +16,7 @@
         android:id="@+id/marker_view_icon"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:contentDescription="TODO" />
+        android:contentDescription="picture" />
     <TextView
         android:gravity="center"
         android:id="@+id/marker_view_type"

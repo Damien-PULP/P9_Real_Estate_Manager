@@ -5,8 +5,13 @@
 package com.openclassrooms.realestatemanager.view.fragment;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,17 +36,22 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.openclassrooms.realestatemanager.R;
 import com.openclassrooms.realestatemanager.model.PropertyObj;
 import com.openclassrooms.realestatemanager.model.User;
+import com.openclassrooms.realestatemanager.utils.GPSTrackerManager;
 import com.openclassrooms.realestatemanager.view.activity.MainActivity;
 import com.openclassrooms.realestatemanager.view.marker.InfoMarkerView;
 import com.openclassrooms.realestatemanager.view.viewmodel.Injection;
 import com.openclassrooms.realestatemanager.view.viewmodel.MainViewModel;
 import com.openclassrooms.realestatemanager.view.viewmodel.ViewModelFactory;
 
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
+
+public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener, LocationListener {
 
     //DATA
     private List<PropertyObj> propertyObjs = new ArrayList<>();
@@ -51,45 +61,97 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
     private MainViewModel mainViewModel;
 
-    private FusedLocationProviderClient fusedLocationClient;
+    //private FusedLocationProviderClient fusedLocationClient;
     private LifecycleOwner activity;
+
+    private static final int REQUEST_LOCATION_PERMISSION = 1;
+    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_map, container, false);
         activity = getActivity();
         configureViewModel();
-        getCurrentLocation();
+        getLocation();
+        //getCurrentLocation();
 
         return root;
     }
 
     private void configureViewModel() {
-        ViewModelFactory viewModelFactory = Injection.provideViewModelFactory(getActivity());
-        this.mainViewModel = new ViewModelProvider(Objects.requireNonNull(getActivity()), viewModelFactory).get(MainViewModel.class);
+        ViewModelFactory viewModelFactory = Injection.provideViewModelFactory((MainActivity) activity);
+        this.mainViewModel = new ViewModelProvider(Objects.requireNonNull((MainActivity) activity), viewModelFactory).get(MainViewModel.class);
         mainViewModel.init();
     }
 
-    private void getCurrentLocation() {
+    private void getLocation() {
+
+        //boolean stateApi = checkPlayServices();
+        //Log.d("MainActivity", "the status of Google Play Service : " + stateApi);
+        FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient((MainActivity) activity);
+        if (ActivityCompat.checkSelfPermission((MainActivity) activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission((MainActivity) activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestLocationPermission();
+        }
+        fusedLocationProviderClient.getLastLocation().addOnSuccessListener(location -> {
+            if(location != null){
+                userLatitude = location.getLatitude();
+                userLongitude = location.getLongitude();
+                getUser();
+            }else{
+                Log.e("MainActivity", "the location is null");
+            }
+        }).addOnFailureListener(Throwable::printStackTrace);
+    }
+    /**private void getCurrentLocation() {
+
+        /*GPSTrackerManager tracker = new GPSTrackerManager((MainActivity) activity);
+
+        if(tracker.isPossibleGetLocation()){
+            Location location = tracker.getCurrentLocation();
+            if(location != null) {
+                Log.d("MapFragment", "latitude" + location.getLatitude() + "longitude" + location.getLongitude());
+                userLatitude = location.getLatitude();
+                userLongitude = location.getLongitude();
+                getUser();
+            }
+        }else{
+            Log.e("MapFragment", "error get Location");
+        }
+
+
+
+        LocationManager locationManager = (LocationManager) ((MainActivity) activity).getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission((MainActivity) activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission((MainActivity) activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            int locationRequestCode = 100;
+            ActivityCompat.requestPermissions((MainActivity) activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                    locationRequestCode);
+            return;
+        }
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+
         //GET LOCATION
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(Objects.requireNonNull(getActivity()));
-        if (mainViewModel.checkPermissionLocation((MainActivity) getActivity())) {
-            if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(Objects.requireNonNull((MainActivity)activity));
+        if (mainViewModel.checkPermissionLocation((MainActivity)activity)) {
+            if (ActivityCompat.checkSelfPermission((MainActivity)activity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission((MainActivity)activity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 getCurrentLocation();
             }
-            fusedLocationClient.getLastLocation().addOnSuccessListener(getActivity(), location -> {
+            fusedLocationClient.getLastLocation().addOnSuccessListener((MainActivity)activity, location -> {
                 if (location != null) {
                     userLatitude = location.getLatitude();
                     userLongitude = location.getLongitude();
-                    getUser();
+
+                }else{
+                    getCurrentLocation();
                 }
-            }).addOnFailureListener(getActivity(), Throwable::printStackTrace);
+            }).addOnFailureListener(e -> {
+                Log.e("MapFragment", "error map : ");
+                Log.e("MapFragment", e.getLocalizedMessage());
+            });
         }
-    }
+    }*/
 
     private void getUser() {
-        assert mainViewModel.getUser() != null;
-            mainViewModel.getUser().observe(Objects.requireNonNull(activity), this::getProperty);
+        mainViewModel.getUser().observe(Objects.requireNonNull(activity), this::getProperty);
     }
 
     private void getProperty(User user) {
@@ -103,16 +165,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
     private void configureMap() {
         //MAP Fragment
-        if(((MainActivity)activity).getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_detail) != null){
-            //LAND VIEW
-            //MAP Fragment
-            SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.fragment_detail_location_maps_land);
-            if (mapFragment != null) {
-                mapFragment.getMapAsync(this);
-            }
-        }else{
-            //MAP Fragment
-            SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.fragment_detail_location_maps);
+        if(activity != null) {
+            SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.fragment_map_support_map_fragment);
             if (mapFragment != null) {
                 mapFragment.getMapAsync(this);
             }
@@ -150,9 +204,28 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @AfterPermissionGranted(REQUEST_LOCATION_PERMISSION)
+    public void requestLocationPermission() {
+        String[] perms = {Manifest.permission.ACCESS_FINE_LOCATION};
+        if(EasyPermissions.hasPermissions((MainActivity) activity, perms)) {
+            Toast.makeText((MainActivity) activity, "Permission already granted", Toast.LENGTH_SHORT).show();
+            getLocation();
+        }
+        else {
+            EasyPermissions.requestPermissions(this, "Please grant the location permission", REQUEST_LOCATION_PERMISSION, perms);
+        }
+    }
+
+    /*
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 1000) {// If request is cancelled, the result arrays are empty.
+        if (requestCode == 100) {// If request is cancelled, the result arrays are empty.
             if (grantResults.length > 0
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 if (ActivityCompat.checkSelfPermission(Objects.requireNonNull(getActivity()), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -170,5 +243,25 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
                 Toast.makeText(getActivity(), "Permission denied", Toast.LENGTH_SHORT).show();
             }
         }
+    }*/
+
+
+    @Override
+    public void onLocationChanged(@NonNull Location location) {
+        userLatitude = location.getLatitude();
+        userLongitude = location.getLongitude();
+        getUser();
+    }
+    @Override
+    public void onStatusChanged(String var1, int var2, Bundle var3){
+        Log.d("MapFragment", "here status");
+    }
+    @Override
+    public void onProviderEnabled(String var1){
+        Log.d("MapFragment", "here provider enabled ");
+    }
+    @Override
+    public void onProviderDisabled(String var1){
+        Log.d("MapFragment", "here provider disabled");
     }
 }

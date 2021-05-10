@@ -148,30 +148,51 @@ public class MainActivity extends AppCompatActivity {
                 }
                 break;
             case 2 :
-                if(getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_main) != null) {
-                    if (Objects.requireNonNull(getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_main)).getClass() == AddFragment.class) {
-                        addFragment = (AddFragment) getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_main);
+                if(findViewById(R.id.activity_main_frame_detail) == null){
+                    if(getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_main) != null) {
+                        if (Objects.requireNonNull(getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_main)).getClass() == AddFragment.class) {
+                            addFragment = (AddFragment) getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_main);
+                        }
+                    }
+                    if(addFragment == null){
+                        addFragment = new AddFragment();
+                    }
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.activity_main_frame_main, addFragment)
+                            .commit();
+                }else{
+                    if(getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_main) != null) {
+                        addFragment = new AddFragment();
+
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.activity_main_frame_detail, addFragment)
+                                .commit();
                     }
                 }
-                if(addFragment == null){
-                    addFragment = new AddFragment();
-                }
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.activity_main_frame_main, addFragment)
-                        .commit();
                 break;
             case 3 :
-                if(getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_main) != null) {
-                    if (Objects.requireNonNull(getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_main)).getClass() == MapFragment.class) {
-                        mapFragment = (MapFragment) getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_main);
+                if(findViewById(R.id.activity_main_frame_detail) == null){
+                    if(getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_main) != null) {
+                        if (Objects.requireNonNull(getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_main)).getClass() == MapFragment.class) {
+                            mapFragment = (MapFragment) getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_main);
+                        }
+                    }
+                    if(mapFragment == null){
+                        mapFragment = new MapFragment();
+                    }
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.activity_main_frame_main, mapFragment)
+                            .commit();
+                }else{
+                    if(getSupportFragmentManager().findFragmentById(R.id.activity_main_frame_main) != null) {
+                        mapFragment = new MapFragment();
+
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.activity_main_frame_detail, mapFragment)
+                                .commit();
                     }
                 }
-                if(mapFragment == null){
-                    mapFragment = new MapFragment();
-                }
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.activity_main_frame_main, mapFragment)
-                        .commit();
+
                 break;
 
         }

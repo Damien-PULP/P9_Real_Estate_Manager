@@ -27,7 +27,7 @@ import java.util.Objects;
 
 public class DialogSearchView extends AlertDialog {
 
-    private final List<PointOfInterest> pointOfInterestObj;
+    private final List<PointOfInterest> pointOfInterestObj = new ArrayList<>();
     //UI
     private Button isNotSold;
     private Button isSold;
@@ -58,15 +58,23 @@ public class DialogSearchView extends AlertDialog {
         super(context);
         this.context = context;
         this.callbackRef = new WeakReference<>(callback);
-        this.pointOfInterestObj = pointOfInterests;
+
+        List<String> POI_value = new ArrayList<>();
+
+        for(int i = 0; i < pointOfInterests.size(); i++){
+            if(!POI_value.contains(pointOfInterests.get(i).getName())){
+                POI_value.add(pointOfInterests.get(i).getName());
+                pointOfInterestObj.add(pointOfInterests.get(i));
+            }
+        }
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         View content = LayoutInflater.from(context).inflate(R.layout.dialog_search_view, null);
         setView(content);
-        setTitle("Search a property");
-        setButton(DialogInterface.BUTTON_POSITIVE, "Search", (dialogInterface, i) -> searchProperty());
+        setTitle(context.getResources().getString(R.string.select_a_property));
+        setButton(DialogInterface.BUTTON_POSITIVE, context.getResources().getString(R.string.search_word), (dialogInterface, i) -> searchProperty());
         onConfigureDialog(content);
         super.onCreate(savedInstanceState);
     }

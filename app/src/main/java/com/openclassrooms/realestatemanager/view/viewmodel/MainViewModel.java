@@ -26,6 +26,7 @@ import com.openclassrooms.realestatemanager.model.User;
 import com.openclassrooms.realestatemanager.view.activity.MainActivity;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Executor;
 
@@ -93,7 +94,7 @@ public class MainViewModel extends ViewModel {
         });
     }
     public void updateStateOfProperty(long id, String state){
-        propertyDataSource.updateStateProperty(id, state);
+        propertyDataSource.updateStateProperty(id, state, new Date());
     }
     public void updateProperty(Property propertyUpdated, Address addressOfProperty, List<Photo> photosOfTheProperty, List<PointOfInterest> pointsOfInterest) {
         executor.execute(()-> {

@@ -105,9 +105,9 @@ public class AdapterRecyclerViewPhotosList extends RecyclerView.Adapter<AdapterR
             }else{
                 itemView.setOnLongClickListener(v -> {
                     final AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                    builder.setTitle("Are you sure of remove this picture ?");
-                    builder.setPositiveButton("Yes",(dialogInterface, i) -> adapter.removeAPhoto(photo));
-                    builder.setNegativeButton("No", null);
+                    builder.setTitle(R.string.msg_sure_remove_picture);
+                    builder.setPositiveButton(R.string.positive_response,(dialogInterface, i) -> adapter.removeAPhoto(photo));
+                    builder.setNegativeButton(R.string.negative_response, null);
                     AlertDialog dialog = builder.create();
                     dialog.show();
                     return true;

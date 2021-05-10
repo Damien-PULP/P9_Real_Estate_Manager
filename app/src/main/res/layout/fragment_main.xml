@@ -19,7 +19,7 @@
         app:layout_constraintTop_toTopOf="parent"
         android:src="@drawable/ic_icon_real_estate_manager"
         android:background="@color/colorTrans"
-        android:contentDescription="TODO"
+        android:contentDescription="logo"
         />
 
     <ImageButton
@@ -35,7 +35,7 @@
         android:src="@drawable/ic_baseline_search_24"
         android:background="@null"
         android:tint="@color/colorOnSurfacePrimaryDark"
-        android:contentDescription="TODO" />
+        android:contentDescription="search" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/fragment_main_alert_filter"
@@ -54,7 +54,7 @@
             android:background="@null"
             android:tint="@color/colorOnSurfacePrimaryDark"
             android:layout_margin="8dp"
-            android:contentDescription="TODO" />
+            android:contentDescription="filter active" />
 
         <TextView
             style="@style/TextAppearance.MaterialComponents.Headline6"

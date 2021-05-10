@@ -91,7 +91,7 @@ public class AdapterRecyclerViewPropertyList extends RecyclerView.Adapter<Adapte
                 pris.setText("$" + (propertyObj.getProperty().getPris()));
                 item.setAlpha(1f);
             }else{
-                pris.setText("This property is sell");
+                pris.setText(R.string.msg_property_is_sell);
                 item.setAlpha(0.5f);
             }
 

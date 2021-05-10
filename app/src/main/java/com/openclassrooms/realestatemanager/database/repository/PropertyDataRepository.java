@@ -18,6 +18,7 @@ import com.openclassrooms.realestatemanager.model.PropertyObj;
 import com.openclassrooms.realestatemanager.model.SearchPropertyModel;
 import com.openclassrooms.realestatemanager.utils.Utils;
 
+import java.util.Date;
 import java.util.List;
 
 public class PropertyDataRepository {
@@ -67,7 +68,7 @@ public class PropertyDataRepository {
         this.pointOfInterestDao.insertPointOfInterest(pointOfInterest);
     }
     // UPDATE
-    public void updateStateProperty(long id, String state){ this.propertyDao.updateStateProperty(id,state); }
+    public void updateStateProperty(long id, String state, Date date){ this.propertyDao.updateStateProperty(id,state, date); }
     public void updateProperty (Property property){
         this.propertyDao.updateProperty(property);
     }

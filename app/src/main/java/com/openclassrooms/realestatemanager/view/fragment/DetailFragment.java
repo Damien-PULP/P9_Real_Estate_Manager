@@ -19,6 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.view.menu.ActionMenuItemView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
@@ -57,6 +58,8 @@ import static android.app.Activity.RESULT_OK;
 public class DetailFragment extends Fragment implements OnMapReadyCallback {
 
     //UI
+    private NestedScrollView content;
+    private TextView noPropertySelected;
     private TextView txtStateProperty;
     private TextView txtTypeProperty;
     private TextView txtDescriptionProperty;
@@ -122,11 +125,14 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
         adapter = new AdapterRecyclerViewPhotosList(false, mainViewModel);
         recyclerViewPhotosProperty.setAdapter(adapter);
 
+        content = root.findViewById(R.id.fragment_detail_content);
+        noPropertySelected = root.findViewById(R.id.fragment_detail_no_item_selected);
         //MENU
         itemSellMenu = root.findViewById(R.id.fragment_detail_sell_button);
         itemEditMenu = root.findViewById(R.id.fragment_detail_edit_button);
     }
     private void updateUIWithData(PropertyObj propertyObj) {
+        updateUIOnYesOrNoData(true);
         txtTypeProperty.setText(propertyObj.getProperty().getType());
         txtDescriptionProperty.setText(propertyObj.getProperty().getDescription());
         String location = propertyObj.getAddress().getCountry() + ", " +  propertyObj.getAddress().getCity() + ", " +  propertyObj.getAddress().getPostalCode() + ", " +  propertyObj.getAddress().getStreet() + " " +  propertyObj.getAddress().getNumberStreet();
@@ -190,12 +196,26 @@ public class DetailFragment extends Fragment implements OnMapReadyCallback {
 
     }
 
+    private void updateUIOnYesOrNoData(boolean state){
+        if(noPropertySelected != null) {
+            if (state) {
+                content.setVisibility(View.VISIBLE);
+                noPropertySelected.setVisibility(View.GONE);
+            } else {
+                content.setVisibility(View.GONE);
+                noPropertySelected.setVisibility(View.VISIBLE);
+            }
+        }
+    }
+
     private void getData() {
         Long idProperty = mainViewModel.getCurrentIndexPropertyDetail();
 
         if (idProperty != null) {
             currentProperty = mainViewModel.getAPropertyObj(idProperty);
             currentProperty.observe(Objects.requireNonNull(getActivity()), this::updateUIWithData);
+        }else{
+            updateUIOnYesOrNoData(false);
         }
     }
 

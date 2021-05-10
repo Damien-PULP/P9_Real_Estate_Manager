@@ -48,7 +48,7 @@
                         android:layout_width="100dp"
                         android:layout_height="100dp"
                         android:src="@drawable/ic_baseline_add_24"
-                        android:contentDescription="TODO" />
+                        android:contentDescription="add_picture" />
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/add_fragment_recycler_view_photos"
@@ -71,7 +71,6 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-
                     android:hint="type">
 
                     <com.google.android.material.textfield.MaterialAutoCompleteTextView
