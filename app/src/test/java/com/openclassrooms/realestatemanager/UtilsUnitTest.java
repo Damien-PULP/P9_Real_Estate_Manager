@@ -45,14 +45,14 @@ public class UtilsUnitTest {
 
     @Test
     public void calculateMortgageTest () {
-        float pris = 500000f;
+        float pris = 150000f;
         int bring = 50000;
         int time = 20;
-        float rate = 2.5f;
+        float rate = 2f;
 
         float monthlyPris = Utils.calculateMonthlyPayment(pris, bring, time, rate);
-        float totalPris = Utils.calculateTotalPrisOfProperty(monthlyPris, time);
+        float totalPris = Utils.calculateTotalPriceOfProperty(monthlyPris, time);
 
-        assertTrue(monthlyPris == 4687.5f && totalPris == 1125000f);
+        assertTrue(monthlyPris == 505.8907f && totalPris == 121413.768f);
     }
 }

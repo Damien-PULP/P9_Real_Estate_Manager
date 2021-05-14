@@ -18,9 +18,9 @@
     <string name="positive_response">Yes</string>
     <string name="negative_response">No</string>
     <string name="msg_property_is_sell">This property is sell</string>
-    <string name="msg_part1_mortgage">\"Your monthly payment is \"</string>
-    <string name="msg_part2_mortgage">\"$ \n and the total pris on \"</string>
-    <string name="msg_part3_mortgage">\" years is \"</string>
+    <string name="msg_part1_mortgage">Your monthly payment is /</string>
+    <string name="msg_part2_mortgage">\n and the total pris on </string>
+    <string name="msg_part3_mortgage"> years is </string>
     <string name="update_property">Update property</string>
     <string name="msg_property_is_updated">The property have updated !</string>
     <string name="msg_alert_complete_address">Complete the address of the property</string>

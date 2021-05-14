@@ -4,6 +4,9 @@
 
 package com.openclassrooms.realestatemanager;
 
+import android.content.Context;
+import android.net.wifi.WifiManager;
+
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -32,9 +35,13 @@ public class ConnectivityInternetInstrumentalTest {
         InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand("svc wifi disable");
         InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand("svc data disable");
 
-        TimeUnit.SECONDS.sleep(1);
+        TimeUnit.SECONDS.sleep(2);
 
         mActivityTestRule.getScenario().onActivity(activity -> {
+
+            WifiManager wifi = (WifiManager) activity.getSystemService(Context.WIFI_SERVICE);
+            wifi.setWifiEnabled(false);
+
             boolean state = Utils.isInternetAvailable(activity);
             assertFalse(state);
         });
@@ -45,9 +52,15 @@ public class ConnectivityInternetInstrumentalTest {
         InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand("svc wifi enable");
         InstrumentationRegistry.getInstrumentation().getUiAutomation().executeShellCommand("svc data enable");
 
-        TimeUnit.SECONDS.sleep(1);
+
+
+        TimeUnit.SECONDS.sleep(2);
 
         mActivityTestRule.getScenario().onActivity(activity -> {
+
+            WifiManager wifi = (WifiManager) activity.getSystemService(Context.WIFI_SERVICE);
+            wifi.setWifiEnabled(true);
+
             boolean state = Utils.isInternetAvailable(activity);
             assertTrue(state);
         });

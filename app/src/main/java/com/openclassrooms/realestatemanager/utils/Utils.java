@@ -69,19 +69,32 @@ public class Utils {
      */
     public static Boolean isInternetAvailable(Context context){
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        return (Objects.requireNonNull(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE)).getState() == NetworkInfo.State.CONNECTED || Objects.requireNonNull(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)).getState() == NetworkInfo.State.CONNECTED );
+        if((Objects.requireNonNull(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE)).getState() == NetworkInfo.State.CONNECTED || Objects.requireNonNull(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)).getState() == NetworkInfo.State.CONNECTED )){
+            try {
+                Process ping = java.lang.Runtime.getRuntime().exec("ping -c 1 www.google.com");
+                int valPing = ping.waitFor();
+                return (valPing == 0);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
     }
 
     /**
      * This method is my additional functionality : To calculate mortgage by month
-     * @param pris - float money
+     * @param price - float money
      * @param bring - int the bring in mortgage
      * @param years - int years to refund the loan
      * @param rate - int rate of the loan
      * @return - float the monthly payment
      */
-    public static Float calculateMonthlyPayment (float pris, int bring, int years, float rate){
-        return ((pris - bring) / (years * 12)) * rate;
+    public static Float calculateMonthlyPayment (float price, int bring, int years, float rate){
+        float rate_on_month = ((rate / 100) / 12);
+
+        float numerator = ((price - bring) * rate_on_month);
+        double denominator = 1 - Math.pow((1 / (1 + rate_on_month)), (12 * years));
+        return (float) (numerator / denominator);
     }
 
     /**
@@ -90,8 +103,12 @@ public class Utils {
      * @param years - int the years to refund the loan
      * @return - float the total payment
      */
-    public static Float calculateTotalPrisOfProperty (float monthlyPris, int years){
+    public static Float calculateTotalPriceOfProperty(float monthlyPris, int years){
         return monthlyPris * years * 12;
+    }
+
+    public static Float calculateTotalProfitsOfProperty (float monthlyPrice, int years, float price){
+        return monthlyPrice * years * 12 - price;
     }
 
     /**
